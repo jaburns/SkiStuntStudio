@@ -1,0 +1,6 @@
+#### load GUI
+< guiInit.tcl
+< gui.tcl
+
+# puts "Done."
+

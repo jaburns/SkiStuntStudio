@@ -1,0 +1,95 @@
+set baseDir ski
+set scenarioDir $baseDir/lesson1
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.txt
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+tog_gnd
+
+loadtexobj props/square_tess.wobj props/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+tog_gnd
+
+#----------------------------------------------------------------------
+
+< $::charDir/common.setup
+
+set ::restLocX -1.465535
+set ::restLocY 0.598467
+
+world setaf skier
+restpose -1.465535 0.598467 1.529096
+
+#----------------------------------------------------------------------
+# rock
+#----------------------------------------------------------------------
+
+< props/newBigRock.setup
+set rockName [artfig name]
+set skinName "[artfig name].skin"
+restpose -1.931729 -0.340175 2.172032
+artfig anchored true
+
+# hide texture
+texObj $skinName tex 0
+
+#----------------------------------------------------------------------
+# spring
+#----------------------------------------------------------------------
+
+set spKp 2000
+set spKd 50
+spring skier 1 -1.747811 0.06718 $rockName 1 -1.747811 0.06718 $spKp $spKd
+spring skier 1 -0.648412 0.084628 $rockName 1 -0.648412 0.084628 $spKp $spKd
+title "$::charName >>  Lesson 1"
+
+#----------------------------------------------------------------------
+
+# play no sound at startup
+proc startSim {} {
+}
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+#----------------------------------------------------------------------
+
+set ::skierState $::onGround
+
+#----------------------------------------------------------------------
+
+source anim.tcl
+
+proc anim_begin {} {
+    _anim_begin
+
+    gui delall
+#    play $::scenarioDir/lesson.ani
+#    play $::scenarioDir/lesson_az.ani
+    buf_cload $::scenarioDir/lesson.az
+    play logbuf
+}
+
+proc anim_end {} {
+    _anim_end
+
+    # check to see if we have watched the entire animation
+    if {[pb time] > 49} {
+	# we have watched enough... stage completed!
+	set ::skierState $::nextStage
+    }
+}
+
+# override the goal showing step
+proc showGoal {} {
+    if {[preview] == 0} {
+	message "Lesson 1: Posture Control\\n\\n The position of the mouse\\n pointer controls the\\n posture of the character.\\n\\nPress <space> to continue\\nPress <Esc> to stop lesson at\\n any time" 15 18
+    }
+}

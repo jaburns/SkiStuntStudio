@@ -1,0 +1,160 @@
+#----------------------------------------------------------------------
+# common.setup
+# - load character and basic sounds
+#----------------------------------------------------------------------
+
+# sound directory setup
+set soundDir ../sound
+set ::soundDir $soundDir
+
+# clear routine that is called to reset all objects at the beginning of
+# a new simulation session
+proc resetActiveObj {} {}
+
+
+# clear routine that is called if the scene requires a
+# customised way to setup the goal description
+proc showGoal2 {} {}
+
+# ski directory name
+set skiDir ski
+set ::skiDir $skiDir
+
+#----------------------------------------------------------------------
+# load character
+#----------------------------------------------------------------------
+
+< $skiDir/$::charSetup
+< $skiDir/common.keys
+
+#----------------------------------------------------------------------
+# basic sound
+#----------------------------------------------------------------------
+
+sound load doh $soundDir/doh.wav
+sound load jet $soundDir/jet.wav
+sound load slide $soundDir/s3Loud.wav
+sound load slideSoft $soundDir/s3.wav
+sound load slideSoft2 $soundDir/s3.wav
+sound load thud $soundDir/thud2.wav
+sound load thudLow $soundDir/thudLow.wav
+sound load softThud $soundDir/softThud2.wav
+sound load explosn $soundDir/explosn.wav
+sound load wind $soundDir/windClip.wav
+sound load heavyThud $soundDir/heavyThud.wav
+sound load signCrack $soundDir/signCrack.wav
+# sound load music $soundDir/rock2.wav
+
+#----------------------------------------------------------------------
+# non-scenario specific setup
+#----------------------------------------------------------------------
+
+set ::dt_disp 0.02
+set ::dt_sim 0.001
+set ::t_end 1e20
+
+world setaf skier
+world pbFrameSkip false
+world panOffset 0.3 -0.15
+# winsize 3 80 1020 660
+# fullscreen
+autopan 0.01 0.01
+zoom -5
+grid
+hotzone
+tog_gnd
+
+# clear messages
+mlmessage ""
+
+# play sound at the beginning of simulation
+proc startSim {} {
+    sound play wind -vol 0.2 -loop
+#    sound play music -loop
+}
+
+# initialize stunt event controller
+set ::seEvalPeriod 0.1
+world seCtrl seEval $::seEvalPeriod
+source $skiDir/stuntEval.tcl
+
+# initialize stunt event generators
+world setaf skier
+usemonitor timeGen
+usemonitor stateGen 1 1.022 0.189
+usemonitor contactGen b sl
+
+# initialize the accummulated zoom
+accumZoom 0
+
+#------------------------------
+# undoZoom - undo the zoom levels accummulated so far
+#------------------------------
+
+proc undoZoom {} {
+    zoom [expr [accumZoom] * -1]
+    accumZoom 0
+}
+
+#------------------------------
+# autoscroll - function called to do automatic camera
+#              scroll (for terrain preview)
+#------------------------------
+
+proc autoscroll {} {
+  # to be overridden by scenarios that support this feature
+}
+
+
+#------------------------------
+# loadchar - replace the current character by the one
+#            specified (unless the current character is the one specified)
+#------------------------------
+
+proc loadchar { cn } {
+    if {$cn != $::charName} {
+	set cnames [char_getNames]
+	set ci [lsearch $cnames $cn]
+	if {$ci > -1} {
+	    # backup gui mode value
+	    set gm [guiMode]
+
+	    # unload current character
+	    unloadChar
+
+	    # load new character
+	    char_setChar $ci
+	    world newaf
+	    < $::skiDir/$::charSetup
+
+	    # reset gui mode
+	    guiMode $gm
+	}
+    }
+}
+
+
+#----------------------------------------------------------------------
+# add jet to every scene
+#----------------------------------------------------------------------
+proc alwaysJetpack {} {
+	world setaf skier
+	artfig setlink 3
+	link setloop jetPack
+	loop active true
+	texObj jetPack.skin tex 1
+	jetpack 3 1.10715 1.307508 -0.10 -0.5 700 step
+	extf eval flameTexObj jetPackFlame.skin
+	extf eval flameSound "jet -vol 0.85"
+}
+#alwaysJetpack
+
+#------------------------------
+# loadscenario -- dummy routine; "loadscenario" is used
+#    as a means to log the scenario name in a readily-extractable
+#    fashion at the beginning of the animation log file
+#------------------------------
+
+proc loadscenario { sn } {
+}
+

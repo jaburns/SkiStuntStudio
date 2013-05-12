@@ -1,0 +1,59 @@
+set baseDir ski
+set scenarioDir $baseDir/deathValley
+set ::scenarioDir $scenarioDir
+set propsDir props
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.txt
+
+loadtexobj $scenarioDir/gnd_tess.wobj $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd_tess.txfm
+
+loadtexobj $scenarioDir/gnd_1_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_1_tess.txfm
+
+loadtexobj $propsDir/square_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_0.txfm
+loadtexobj $propsDir/square_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_2.txfm
+loadtexobj $propsDir/square_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_3.txfm
+loadtexobj $propsDir/square_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_4.txfm
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+gnd slices 30
+
+< $::charDir/common.setup
+
+set ::restLocX 2.3
+set ::restLocY 0.7
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName >>  death valley"
+hotzone off
+zoom -1
+
+#----------------------------------------------------------------------
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 10
+    camera fly $::scenarioDir/camera.path
+}
+
+if [preview] {
+    accumZoom 0
+    zoom -8
+    winview 70 -40
+}

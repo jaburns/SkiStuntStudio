@@ -1,0 +1,8 @@
+set baseDir ski
+set scenarioDir $baseDir/extremeSkill1
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/previewGL.jpg repeat
+title "$::charName >> Skill Course #1"

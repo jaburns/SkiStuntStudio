@@ -1,0 +1,111 @@
+set baseDir ski
+set scenarioDir $baseDir/extremeRavineBoard
+set ::scenarioDir $scenarioDir
+
+# gndfile $scenarioDir/gnd.txt
+
+gndfile $scenarioDir/gnd_1.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 30
+gnd togslices
+
+gndfile $scenarioDir/gnd_2.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 5
+gnd togslices
+
+gndfile $scenarioDir/gnd_3.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 30
+gnd togslices
+
+loadtexobj $scenarioDir/gnd_tess.wobj $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd_tess.txfm
+
+< $::charDir/common.setup
+world setaf skier
+artfig setmonitor Ski2Monitor
+monitor eval maxHzImpact 1200
+monitor eval maxDnImpact 1200
+
+set ::restLocX -28
+set ::restLocY 14
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName >>  ravine + jet"
+
+zoom -2
+simulate set_rtratio 1
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+#----------------------------------------------------------------------
+# add jet pack
+#----------------------------------------------------------------------
+
+#world setaf skier
+
+# - activate collision geometry for jet-pack
+#artfig setlink 3
+#link setloop jetPack
+#loop active true
+
+# - activate jet-pack artwork
+#texObj jetPack.skin tex 1
+
+# forward balance
+# jetpack 3 0.87715 1.307508 -0.50 -0.2 1000 step
+
+# upward balance
+# jetpack 3 1.07715 1.307508 -0.20 -0.5 1000 step
+
+# upward balance - better
+# jetpack 3 1.08715 1.307508 -0.10 -0.5 700 step
+
+# upward balance - better
+#jetpack 3 1.10715 1.307508 -0.10 -0.5 700 step
+
+#extf eval flameTexObj jetPackFlame.skin
+#extf eval flameSound "jet -vol 0.85"
+
+#----------------------------------------------------------------------
+# load in active objects
+#----------------------------------------------------------------------
+
+sound load heavyThud $::soundDir/heavyThud.wav
+
+< props/newGiantSpBoard.setup
+artfig setname catapult
+
+
+
+
+#----------------------------------------------------------------------
+
+proc resetActiveObj {} {
+	world setaf catapult
+	restpose -15 8.1 -16.524300
+	#restpose -24 12 -16.524300
+	artfig sleep
+
+}
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 10
+    camera fly $::scenarioDir/camera.path
+}
+
+if [preview] {
+    accumZoom 0
+    zoom -2
+    winview -5 -3
+}

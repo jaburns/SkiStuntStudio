@@ -1,0 +1,338 @@
+set baseDir ski
+set scenarioDir $baseDir/gapCrumbleShell
+set ::scenarioDir $scenarioDir
+set propsDir props
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd3_1.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 80
+
+gndfile $scenarioDir/gnd3_2.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+gndfile $scenarioDir/gnd3_3.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 70
+gnd sliceStat
+
+loadtexobj $scenarioDir/gnd_tess.wobj $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd_tess.txfm
+
+loadtexobj $scenarioDir/blank1.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/blank.txfm
+
+loadtexobj $scenarioDir/blank2.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/blank.txfm
+
+loadtexobj $scenarioDir/blank3.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/blank.txfm
+
+< $::charDir/common.setup
+
+set ::restLocX -23.378
+set ::restLocY 9.4286
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+source $scenarioDir/$::stuntEval
+
+title "$::charName >>  bridge"
+
+#----------------------------------------------------------------------
+# bridge
+#----------------------------------------------------------------------
+
+set breakForce 1200
+
+set ::bridgePieces {}
+
+set name bridgeBlk21
+set pose "7.369531 -1.420351"
+< props/newBridgeBlk2.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+usemonitor forceTrigger 0 -1 $breakForce 1 breakBridge "reset" "trig"
+usemonitor forceTrigger 1 0 10 1 breakBridge "reset" "trig"
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+artfig type Bridge
+
+set name bridgeBlk22
+set pose "9.324017 -1.437801"
+< props/newBridgeBlk2.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+usemonitor forceTrigger 0 -1 $breakForce 1 breakBridge "reset" "trig"
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+artfig type Bridge
+
+set name bridgeBlk23
+set pose "11.278503 -1.437801"
+< props/newBridgeBlk2.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+usemonitor forceTrigger 0 -1 $breakForce 1 breakBridge "reset" "trig"
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+artfig type Bridge
+
+set name bridgeSupport1
+set pose "6.451557 -0.123826"
+< props/newBridgeSupport.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+
+set name bridgeGuard1
+set pose "7.687013 -0.163895"
+< props/newBridgeGuard.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+
+set name bridgeGuard2
+set pose "8.496126 -0.163895"
+< props/newBridgeGuard.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+
+set name bridgeGuard3
+set pose "9.489017 -0.163895"
+< props/newBridgeGuard.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+
+set name bridgeGuard4
+set pose "10.388634 -0.163895"
+< props/newBridgeGuard.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+
+set name bridgeGuard5
+set pose "11.430865 -0.163895"
+< props/newBridgeGuard.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+
+set name bridgeGuard6
+set pose "12.255746 -0.163895"
+< props/newBridgeGuard.setup
+artfig setname $name
+eval "restpose $pose"
+artfig anchored true
+artfig sleep
+set ::bridgePieces [lappend ::bridgePieces [list $name $pose]]
+
+
+set topSpBreakF 600
+
+# springs to bridge support
+spring bridgeGuard1 1 7.740620 -0.188763 bridgeSupport1 2 7.740620 -0.188763 2000 500 $topSpBreakF
+spring bridgeGuard2 1 8.553555 -0.188763 bridgeSupport1 2 8.553555 -0.188763 2000 500 $topSpBreakF
+spring bridgeGuard3 1 9.538487 -0.188763 bridgeSupport1 2 9.538487 -0.188763 2000 500 $topSpBreakF
+spring bridgeGuard4 1 10.436046 -0.188763 bridgeSupport1 2 10.436046 -0.188763 2000 500 $topSpBreakF
+spring bridgeGuard5 1 11.484522 -0.188763 bridgeSupport1 2 11.484522 -0.188763 2000 500 $topSpBreakF
+spring bridgeGuard6 1 12.326480 -0.188763 bridgeSupport1 2 12.326480 -0.188763 2000 500 $topSpBreakF
+
+set bottomSpBreakF 1200
+
+# springs to bridge blocks
+spring bridgeGuard1 1 7.740620 -1.494781 bridgeBlk21 1 7.740620 -1.494781 2000 500 $bottomSpBreakF
+spring bridgeGuard2 1 8.553555 -1.494781 bridgeBlk21 1 8.553555 -1.494781 2000 500 $bottomSpBreakF
+spring bridgeGuard3 1 9.538487 -1.494781 bridgeBlk22 1 9.538487 -1.494781 2000 500 $bottomSpBreakF
+spring bridgeGuard4 1 10.436046 -1.494781 bridgeBlk22 1 10.436046 -1.494781 2000 500 $bottomSpBreakF
+spring bridgeGuard5 1 11.484522 -1.494781 bridgeBlk23 1 11.484522 -1.494781 2000 500 $bottomSpBreakF
+spring bridgeGuard6 1 12.326480 -1.494781 bridgeBlk23 1 12.326480 -1.494781 2000 500 $bottomSpBreakF
+
+set ::bridgeBroken 0
+
+proc breakBridge { arg } {
+    global ::bridgePieces
+    global ::bridgeBroken
+    set cmd $arg
+
+    if {$cmd == "reset"} {
+	set ::bridgeBroken 0
+	foreach obj $::bridgePieces {
+	    set name [lindex $obj 0]
+	    world setaf $name
+	    artfig anchored true
+	    artfig sleep
+	}
+    } elseif {$cmd == "trig"} {
+	if {$::bridgeBroken == 0} {
+	    foreach obj $::bridgePieces {
+		set name [lindex $obj 0]
+		world setaf $name
+		artfig active true
+		artfig anchored false
+	    }
+	    set ::bridgeBroken 1 
+	}
+    }
+}
+
+proc resetBridge {} {
+    global ::bridgePieces
+    
+    foreach obj $::bridgePieces {
+	set name [lindex $obj 0]
+	set pose [lindex $obj 1]
+	world setaf $name
+	eval "restpose $pose"
+    }
+}
+
+proc resetShell {} {
+    world setaf explosionTrigger
+    restpose 5.959967 -1.440268 102.641701
+    artfig sleep
+
+    world setextf explosion1
+    extf eval moveTo explosionTrigger 1
+    extf active false
+    extf eval rigged true
+}
+
+proc resetTrees {} {
+    world setaf tree1
+    restpose 17.018465 -27.072384 
+    artfig sleep
+
+    world setaf tree2
+    restpose 15.396667 -27.012362
+    artfig sleep
+
+    world setaf tree3
+    restpose 18.475864 -17.939926
+    artfig sleep
+
+    world setaf tree4
+    restpose 18.496719 -19.585564
+    artfig sleep
+}
+
+proc resetActiveObj {} {
+    resetBridge
+    resetShell
+    resetTrees
+}
+
+#----------------------------------------------------------------------
+# trees
+#----------------------------------------------------------------------
+
+< props/newTree.setup
+artfig setname tree1
+restpose 17.018465 -27.072384 
+
+< props/newTree.setup
+artfig setname tree2
+restpose 15.396667 -27.012362
+
+< props/newTree.setup
+artfig setname tree3
+restpose 18.475864 -17.939926
+jt_pd 1 1.7 3 20 40 -10 10
+
+< props/newTree.setup
+artfig setname tree4
+restpose 18.496719 -19.585564
+jt_pd 1 1.7 3 20 40 -10 10
+
+
+#----------------------------------------------------------------------
+# shell
+#----------------------------------------------------------------------
+
+explosion -2.283 -0.76 10 1000 5 1.5 0.5
+extf name explosion1
+extf show true
+
+< props/newShell.setup
+set origName [artfig name]
+artfig setname explosionTrigger
+texObj $origName.skin rename explosion1.skin
+restpose 5.959967 -1.440268 102.641701
+
+world sortTexObj
+
+usemonitor forceTrigger 0 -1 1000 1 explode "reset" "trig"
+usemonitor forceTrigger 0 1 1000 1 explode "reset" "trig"
+extf eval moveTo explosionTrigger 1
+
+set ::shellExploded 0
+
+proc explode {argv} {
+    if {$argv == "trig"} {
+	world setextf explosion1
+	if [extf eval rigged] {
+	    set ::shellExploded 1
+	    extf eval moveTo explosionTrigger 1
+	    simulate log "extf eval moveTo explosionTrigger 1"
+	    extf active true
+	    texObj explosion1.skin tex 0
+	    simulate log "texObj explosion1.skin tex 0"
+	    sound play explosn
+	    world setaf explosionTrigger
+	    artfig active false
+	}
+    } elseif {$argv == "reset" } {
+	set ::shellExploded 0
+	world setaf explosionTrigger
+	artfig active true
+	artfig sleep
+	world setextf explosion1
+	extf active false
+        texObj explosion1.skin tex 1
+	simulate log "texObj explosion1.skin tex 1"
+    }
+}
+
+#----------------------------------------------------------------------
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 7
+    camera fly $::scenarioDir/camera.path
+}
+
+if [preview] {
+    accumZoom 0
+    zoom -4
+    winview 0 -5
+}
+
+showGoal

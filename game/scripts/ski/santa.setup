@@ -1,0 +1,198 @@
+set santaDir santaNew
+set skiDir $::skiDir
+
+#----------------------------------------------------------------------
+# skier
+#----------------------------------------------------------------------
+
+# --- articulated figure ---
+< $santaDir/santa.afig
+artfig setname skier
+
+# --- skin for the skier with skies attached ---
+loadskin $santaDir/skier_lski.skin $santaDir/skier_ski_tess.wobj $santaDir/santa.jpg
+settexobjname lski.skin
+texObj lski.skin dispOrder 50
+loadskin $santaDir/santa_body.skin $santaDir/santa_body_tess.wobj $santaDir/santa.jpg
+settexobjname body.skin
+texObj body.skin dispOrder 50
+loadskin $santaDir/skier_rski.skin $santaDir/skier_ski_tess.wobj $santaDir/santa.jpg
+settexobjname rski.skin
+texObj rski.skin dispOrder 50
+loadskin $santaDir/santa_arm.skin $santaDir/santa_arm_tess.wobj $santaDir/santa.jpg
+settexobjname arm.skin
+texObj arm.skin dispOrder 50
+
+# --- link masses (not used unless "dgen foo" is used) ---
+mass 5 1
+mass 5 2
+mass 8 3
+mass 1 4
+mass 3 5
+mass 2 6
+
+# --- joint parameters ---
+jt_pd 1 0 0.00 -10 10 -1 1 
+jt_pd 2 1.7 3 0 100 -5 5
+jt_pd 3 0.7 3 -110 20 -4 4
+jt_pd 4 0.00 0.01 -20 20 -0.5 0.5 0.07 0.02 -0.5 0.5
+jt_pd 5 0.3 0.3 -90 70 -2 2
+jt_pd 6 0.07 0.01 -15 15 -1 1
+
+# --- ski controls ---
+< $santaDir/santa.keys
+
+# --- skier dynamics ---
+dgen dyn_santa
+
+# -- sign for associcating the joint torq dir to joint extension dir
+jt_ext 3 -1
+jt_ext 5 -1
+
+# --- monitor the motion and states of the skier  ---
+usemonitor ski2Monitor $santaDir/ski.snd 1 skies lski.skin rski.skin dlski drski signCrack normJtPd relaxJtPd
+monitor eval maxHzImpact $::MaxHzImpact
+monitor eval maxDnImpact $::MaxDnImpact
+monitor eval maxShock 13000
+monitor eval passOutSound uhh
+
+# --- enable braking ---
+#usemonitor brakeMonitor 1 skies sl 0.5 step
+
+# --- sliding sound ---
+usemonitor slide Ground:Bridge:GndLike slide 1
+
+# --- thud sound ---
+usemonitor hardLanding all thud 1500
+usemonitor hardLanding back thudLow 1500
+
+# --- make the skier the object that is tracked by the camera ---
+artfig panTgt true
+
+# --- make the link borders invisible
+tog_link
+
+# --- the skier cannot fall asleep
+artfig noSleep true
+
+# --- tag the skier for special treatment
+artfig tag skier
+
+#----------------------------------------------------------------------
+# jet pack
+#----------------------------------------------------------------------
+
+set jpDir ski
+loadskin $jpDir/jetPack.skin $jpDir/jetPack_tess.wobj $jpDir/skier_tex.jpg
+settexobjname jetPack.skin
+texObj jetPack.skin dispOrder 50
+texObj jetPack.skin tex 0
+
+loadskin $jpDir/jetPackFlame.skin $jpDir/jetPackflame_tess.wobj $jpDir/skier_tex.jpg
+settexobjname jetPackFlame.skin
+texObj jetPackFlame.skin dispOrder 50
+texObj jetPackFlame.skin tex 0
+
+# disable the jet-pack loop
+artfig setlink 3
+link setloop jetPack
+loop active false
+
+#----------------------------------------------------------------------
+# right-ski
+#----------------------------------------------------------------------
+
+world newaf
+< $santaDir/skier_ski.afig
+artfig setname drski
+loadskin $santaDir/skier_rski.skin $santaDir/skier_ski_tess.wobj $santaDir/santa.jpg
+settexobjname drski.skin
+texObj drski.skin dispOrder 50
+tog_link
+
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ski2_ski
+
+# --- make the right ski invisible since it is not treated as a 
+# --- separate object yet
+# --- make the right ski invisible since it is not treated as a 
+# --- separate object yet
+artfig active false
+artfig intWithAll
+artfig subInt skier
+artfig subInt dlski
+
+# --- sound ---
+usemonitor slide Ground slideSoft 1
+usemonitor hardLanding all softThud 1500
+
+#----------------------------------------------------------------------
+# left-ski
+#----------------------------------------------------------------------
+
+world newaf
+< $santaDir/skier_ski.afig
+artfig setname dlski
+
+loadskin $santaDir/skier_rski.skin $santaDir/skier_ski_tess.wobj $santaDir/santa.jpg
+settexobjname dlski.skin
+texObj dlski.skin dispOrder 50
+tog_link
+
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ski2_ski
+
+
+# --- make the right ski invisible since it is not treated as a 
+# --- separate object yet
+artfig active false
+artfig intWithAll
+artfig subInt skier
+artfig subInt dlski
+
+# --- sound ---
+usemonitor slide Ground slideSoft2 1
+usemonitor hardLanding all softThud 1500
+
+#----------------------------------------------------------------------
+# joint configuration routines
+#----------------------------------------------------------------------
+
+proc normJtPd {} {
+  world setaf skier
+  jt_pd 1 0 0.00 -10 10 -1 1
+  jt_pd 2 1.7 3 0 100 -10 10
+  jt_pd 3 0.7 3 -110 20 -8 8 
+  jt_pd 5 0.3 0.3 -90 70 -1 1
+}
+
+proc relaxJtPd {} {
+  world setaf skier
+  jt_pd 1 0 0.00 -10 10 -1 1 
+  jt_pd 2 0.0 0.1 0 100 -0.5 0.5 0.02 0.1 -6 6
+  jt_pd 3 0.0 0.1 -110 20 -0.5 0.5 0.02 0.1 -6 6
+  jt_pd 5 0.0 0.01 -90 70 -0.5 0.5 0.02 0.1 -1 1
+}
+
+#----------------------------------------------------------------------
+# character specific sound
+#----------------------------------------------------------------------
+
+sound load uhh $::soundDir/hohoho3.wav
+
+#----------------------------------------------------------------------
+# unload character routine
+#----------------------------------------------------------------------
+
+proc unloadChar {} {
+    world setaf skier
+    world delaf
+
+    world setaf drski
+    world delaf
+
+    world setaf dlski
+    world delaf
+
+    sound delete uhh
+}

@@ -1,0 +1,127 @@
+#----------------------------------------------------------------------
+# tag abbreviations:
+# - ia   = inactive point
+# - bt   = boot point
+# - sd   = skies detachment-activation point
+# - b    = body
+# - sl   = desirable skies contact points
+#----------------------------------------------------------------------
+
+# foot (1)
+new_link
+new_pt 1.193800 0.709700 0.5 b
+new_pt 1.146800 0.488800 0.5 b
+new_pt 1.160900 0.314900 0.5 
+new_pt 1.287800 0.239700 0.5 
+new_pt 1.279213 0.186506 0.5 bt
+new_pt 0.900988 0.186506 0.5 bt
+new_pt 0.842586 0.222660 0.5 bt
+new_pt 0.775500 0.305500 0.5 
+new_pt 0.860100 0.338400 0.5 
+new_pt 0.893000 0.498200 0.5 b
+new_pt 0.907100 0.658000 0.5 b
+new_pt 0.940000 0.719100 0.5 b
+
+new_loop skies
+new_pt 1.847100 0.244400 0 
+new_pt 1.945800 0.305500 0 sd:sl
+new_pt 2.147900 0.230300 0 sd:sl
+new_pt 1.983400 0.122200 0 sd:sl
+new_pt 1.776600 0.123375 0 sd:sl
+new_pt 1.569800 0.124550 0 sd:sl
+new_pt 1.363000 0.125725 0 sd:sl
+new_pt 1.156200 0.126900 0 sd:sl
+new_pt 0.949400 0.128075 0 sd:sl
+new_pt 0.742600 0.129250 0 sd:sl
+new_pt 0.535800 0.130425 0 sd:sl
+new_pt 0.329000 0.131600 0 sd:sl
+new_pt 0.192700 0.202100 0 sd:sl
+new_pt 0.305500 0.291400 0 sd:sl
+new_pt 0.507600 0.239700 0 sd:sl
+new_pt 0.780200 0.249100 0 
+link_close
+jt_org 1 0.940000 0.719100
+mass 1.000000
+link_kp 2000
+link_kd 200
+
+# thigh (2)
+new_link
+new_pt 1.167425 1.256278 0.5 b
+new_pt 1.159521 1.143755 0.5 b
+new_pt 1.096595 1.119906 0.5 b
+new_pt 1.138595 0.711759 0.5 b
+new_pt 1.083400 0.663809 0.5 b
+new_pt 0.966189 0.672044 0.5 b
+new_pt 0.878349 0.763023 0.5 b
+new_pt 0.866686 0.999421 0.5 b
+new_pt 0.786499 1.132267 0.5 b
+new_pt 0.753680 1.134573 0.5 b
+new_pt 0.776967 1.264861 0.5 b
+link_close
+jt_org 2 1.109200 0.756700
+mass 1.000000
+link_kp 2000
+link_kd 200
+
+# torso (3)
+new_link
+new_pt 1.139369 2.197918 0.5 head:b
+new_pt 1.190933 1.991725 0.5 head:b
+new_pt 1.132156 1.892177 0.5 head:b
+new_pt 1.117213 1.813126 0.5 head:b
+new_pt 1.188735 1.690346 0.5 b:back
+new_pt 1.169306 1.277096 0.5 b
+new_pt 0.944359 1.226842 0.5 b
+new_pt 0.764450 1.281806 0.5 b
+new_pt 0.800765 1.397057 0.5 b
+new_pt 0.792266 1.477745 0.5 b:back
+new_pt 0.839594 1.615783 0.5 b:back
+new_pt 0.838073 1.728964 0.5 b:back
+new_pt 0.878751 1.839199 0.5 b:back
+new_pt 0.839721 1.954998 0.5 b:back
+new_pt 0.893809 2.054874 0.5 head:b
+new_pt 0.890979 2.149300 0.5 head:b
+new_pt 0.956842 2.215373 0.5 head:b
+
+new_loop jetPack
+new_pt 0.813306 1.791357 0.5 b
+new_pt 0.832774 1.744079 0.5 b
+new_pt 0.785496 1.335262 0.5 b
+new_pt 0.766028 1.335262 0.5 b
+new_pt 0.735437 1.251830 0.5 b
+new_pt 0.657567 1.307452 0.5 b:back
+new_pt 0.668691 1.340825 0.5 b:back
+new_pt 0.632537 1.343606 0.5 b:back
+new_pt 0.643661 1.621712 0.5 b:back
+new_pt 0.696502 1.757984 0.5 b:back
+new_pt 0.749342 1.799700 0.5 b
+
+link_close
+jt_org 3 0.877715 1.307508
+mass 1.000000
+link_kp 2000
+link_kd 200
+
+# arms (4)
+new_link
+new_pt 0.949886 1.793810 0.5 b
+new_pt 1.146806 1.780061 0.5 b
+new_pt 1.400307 1.564481 0.5 b
+new_pt 1.541291 1.559349 0.5 b
+new_pt 1.567459 1.529253 0.5 b
+new_pt 1.649784 1.561197 0.5 b
+new_pt 1.742246 1.535895 0.5 b
+new_pt 1.704948 1.406579 0.5 b
+new_pt 1.615538 1.408110 0.5 b
+new_pt 1.576065 1.382598 0.5 b
+new_pt 1.300748 1.420666 0.5 b
+new_pt 1.137851 1.516845 0.5 b
+new_pt 0.937446 1.615644 0.5 b
+new_pt 0.919896 1.701675 0.5 b
+link_close
+jt_org 4 0.977600 1.668500
+mass 1.000001
+link_kp 2000
+link_kd 200
+

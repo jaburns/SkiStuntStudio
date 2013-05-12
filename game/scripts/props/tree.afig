@@ -1,0 +1,47 @@
+new_link
+new_pt 0.554224 0.864073 0 all
+new_pt 0.789255 0.864073 0 all
+new_pt 0.836913 0.002115 0 all
+new_pt 0.498623 0.010058 0 all
+link_close
+jt_org 1 0.498623 0.010058
+fix_pt 1 0.606300 0.079900
+mass 20.000000
+link_kp 2000
+link_kd 200
+link_velHist 100 0.05
+
+new_link
+new_pt 0.546281 1.650430 0 all
+new_pt 0.781312 1.652487 0 all
+new_pt 0.781312 0.867902 0 all
+new_pt 0.546281 0.875845 0 all
+link_close
+jt_org 2 0.546281 0.875845
+mass 10.000000
+link_kp 2000
+link_kd 200
+link_velHist 100 0.05
+
+new_link
+new_pt 0.570110 2.411186 0 all
+new_pt 0.757483 2.411186 0 all
+new_pt 0.781312 1.646316 0 all
+new_pt 0.554224 1.654259 0 all
+link_close
+jt_org 3 0.554224 1.654259
+mass 5.000000
+link_kp 2000
+link_kd 200
+link_velHist 100 0.05
+
+new_link
+new_pt 0.717768 2.980740 0 all
+new_pt 0.749540 2.400901 0 all
+new_pt 0.570110 2.400901 0 all
+link_close
+jt_org 4 0.570110 2.400901
+mass 1.000000
+link_kp 2000
+link_kd 200
+link_velHist 100 0.05

@@ -1,0 +1,28 @@
+set baseDir ski
+set scenarioDir $baseDir/practice
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.txt
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+tog_gnd
+
+< $::charDir/common.setup
+
+set ::restLocX -1.5 
+set ::restLocY 0.7
+
+grid
+
+simulate set_rtratio 1 
+title "$::charName >> practice"
+
+# play no sound at startup
+proc startSim {} {
+}

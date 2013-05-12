@@ -1,0 +1,124 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/0
+set ::scenarioDir $scenarioDir
+
+loadtexobj $scenarioDir/gnd0.wobj $scenarioDir/0000FF.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+
+loadtexobj $scenarioDir/gnd1.wobj $scenarioDir/tex0.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd1.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd2.wobj $scenarioDir/tex0.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd2.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd3.wobj $scenarioDir/tex0.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd3.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd4.wobj $scenarioDir/tex0.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd4.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd5.wobj $scenarioDir/2E2E2E.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd5.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd6.wobj $scenarioDir/tex0.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd6.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+< $::charDir/common.setup
+
+set ::restLocX -24.86177
+set ::restLocY 31.38208
+set ::goalText "Make it to the pond alive!"
+set ::hint [list ""]
+
+texload brick $scenarioDir/background.jpg repeat
+
+title "$::charName >> Dark Cavern"
+
+proc sideEffects { arg } {
+
+    _sideEffects arg
+    if {$::skierState == $::nextStage} { return }
+    set goalMet 0
+
+    if {$::skierState != $::out} {
+    if {$::skierState == $::onGround} {
+    if {[onSkies $::currState]} {
+        set x [lindex $::currState 2]
+        set y [lindex $::currState 3]
+        if {$x > 716.9905 && $x < 1159.295} {
+        if {$y < -352.6462 && $y > -471.5012} {
+            set goalMet 1
+        }}
+    }
+    }
+    }
+    goal $goalMet
+}
+
+
+< props/newTree.setup
+artfig setname activeobj0
+
+proc resetActiveObj {} {
+
+    disableJetpack
+
+    world setaf activeobj0
+    restpose -18.07135 27.73816 0
+    artfig sleep
+}
+
+world setaf skier
+link setloop jetPack
+texObj jetPack.skin tex 0
+loop active false
+jetpack 3 1.10715 1.307508 -0.10 -0.5 700 step
+extf name jetpackobject
+extf eval flameTexObj jetPackFlame.skin
+extf eval flameSound "jet -vol 0.85"
+extf active false
+proc enableJetpack {} {
+    world setaf skier
+    artfig setlink 3
+    link setloop jetPack
+    loop active true
+    texObj jetPack.skin tex 1
+    world setextf jetpackobject
+    extf active true
+}
+proc disableJetpack {} {
+    world setaf skier
+    artfig setlink 3
+    link setloop jetPack
+    loop active false
+    texObj jetPack.skin tex 0
+    world setextf jetpackobject
+    extf active false
+    texObj jetPackFlame.skin tex 0
+    extf active false
+    sound stop "jet"
+}

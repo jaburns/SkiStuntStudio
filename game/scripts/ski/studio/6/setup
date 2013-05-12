@@ -1,0 +1,9 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/6
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/preview.jpg repeat
+title "$::charName >> Demo Level"
+

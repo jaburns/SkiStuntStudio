@@ -1,0 +1,11 @@
+loadtexobj logo.wobj logo.jpg
+loadtexobjtxfm logo.txfm
+zoom 1
+# winsize 3 80 1020 660
+
+grid
+hotzone
+
+# title logo
+
+

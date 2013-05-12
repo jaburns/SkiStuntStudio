@@ -1,0 +1,854 @@
+#----------------------------------------------------------------------
+# stuntEval.tcl
+# - common stunt evaluation functions and states
+# - precondition: ski/common.setup is already loaded
+#----------------------------------------------------------------------
+
+#----------------------------------------------------------------------
+# constants
+#----------------------------------------------------------------------
+
+# valid skier states
+set ::onGround  0
+set ::flight    1
+set ::landing   2
+set ::out       3
+set ::nextStage 4
+
+# thresholds measured in simulation time
+set ::flightThTime  0.4
+set ::minLandThTime 0.2
+set ::maxLandThTime 0.6
+set ::jumpThTime    0.6
+set ::outThTime     2.0
+
+# thresholds measured by counters
+set ::flightTh  [expr $::flightThTime / $::seEvalPeriod]
+set ::minLandTh [expr $::minLandThTime / $::seEvalPeriod] 
+set ::maxLandTh [expr $::maxLandThTime / $::seEvalPeriod]
+set ::outTh     [expr $::outThTime / $::seEvalPeriod]
+
+# Number of times the goal condition needs to be present (consecutively)
+# in order for the goal to be deemed completed
+set ::goalTh          5
+
+# Maximum absolute difference in angle between the skies and the
+# terrain in order for the landing to be catagorized as "almost landed"
+# (in degrees).
+set ::almostLandThAng 20
+
+# crowd cheer
+set ::cheerTh         0.9
+
+# comments to make for 1, 2 and 2+ rotations
+set ::rot1Com [list $::soundDir/alright.wav \
+		 $::soundDir/cool.wav]
+set ::rot2Com [list $::soundDir/awesome.wav \
+		  $::soundDir/yeeha.wav]
+set ::rot2PlusCom [list $::soundDir/unbelievable.wav \
+		      $::soundDir/noway.wav]
+
+# probability of the comments being said
+set ::rot1ComFrac 0.7
+set ::rot2ComFrac 0.9
+set ::rot2PlusComFrac 1.0
+
+#----------------------------------------------------------------------
+# state variables
+#----------------------------------------------------------------------
+
+set ::currTime 0
+set ::currState {}
+set ::currCol {}
+
+set ::skierState $::onGround
+set ::airCount 0
+set ::landCount 0
+
+set ::takeoffState {}      
+set ::takeoffTime 0        
+set ::landState {}         
+set ::landTime 0
+set ::crashState {}
+set ::crashTime 0
+
+set ::numTags 2
+set ::numLinks 4
+set ::f0 {}
+set ::contact0 {}
+set ::maxLandF {}
+set ::crashLandF {}
+set ::landContact {}          
+
+set ::jumpInfo {}
+set ::goalCount  0
+
+set ::outCount 0
+
+set ::noComment 0
+set ::unconsciousOk 0
+
+#----------------------------------------------------------------------
+# functions
+#----------------------------------------------------------------------
+
+#------------------------------
+# seInit - initialize the states
+#------------------------------
+
+proc seInit {} {
+    reset
+}
+
+#------------------------------
+# seEval - evaluate stunt events
+#------------------------------
+
+proc seEval { arg } {
+    extractTime $arg
+    extractState $arg
+    extractCol $arg
+
+    trans $arg
+    sideEffects $arg
+}
+
+#------------------------------
+# extractTime - extract the current time from the list of arguments
+#------------------------------
+
+proc extractTime { arg } {
+    set pos [lsearch $arg "t *"]
+    set tRec [lindex $arg $pos]
+    if {$tRec != ""} {
+	set ::currTime [lindex $tRec 1]
+    }
+}
+
+#------------------------------
+# extractState - extract the current state from the list of arguments
+#------------------------------
+
+proc extractState { arg } {
+    set pos [lsearch $arg "s *"]
+    set sRec [lindex $arg $pos]
+    if {$sRec != ""} {
+	set ::currState $sRec
+    }
+}
+
+#------------------------------
+# extractCol - extract the collision info
+#------------------------------
+
+proc extractCol { arg } {
+    set pos [lsearch $arg "c *"]
+    set cRec [lindex $arg $pos]
+    if {$cRec != ""} {
+	set ::currCol $cRec
+    } else {
+	set ::currCol {}
+    }
+}
+
+#------------------------------
+# trans - carry out state state transitions
+#------------------------------
+
+proc trans { arg } {
+    if {$::skierState == $::nextStage} {
+	return
+    }
+
+    if {$::skierState != $::out} {
+	# check for unconscious skier
+	set state $::currState
+	if {$state != ""} {
+	    if {[lindex $state 7] == 0} {
+		startUnconscious
+		return
+	    }
+	}
+    }
+
+    set gc [gndContact $arg]
+
+    if {$::skierState == $::onGround} {
+	if {$gc} {
+	    set ::airCount 0
+	} else {
+	    if {$::airCount == 0} {
+		# store takeoff state
+		set ::takeoffState $::currState 
+		set ::takeoffTime $::currTime
+	    }
+
+	    set ::airCount [expr $::airCount + 1]
+	    if {$::airCount > $::flightTh} {
+		startFlight
+	    }
+	}
+    } elseif {$::skierState == $::flight} {
+	if {$gc} {
+	    if {$::landCount == 0} {
+		set ::landState $::currState
+		set ::landTime  $::currTime
+	    } 
+	    set ::landCount [expr $::landCount + 1]
+	    if {$::landCount > $::minLandTh} {
+		startLanding
+	    }
+	} else {
+	    set ::landCount 0
+	}
+    } elseif {$::skierState == $::landing} {
+	if {$gc} {
+	    set ::landCount [expr $::landCount + 1]
+
+	    if {$::landCount > $::maxLandTh} {
+		startGround
+	    }
+
+	    set ::airCount 0
+	} else {
+	    if {$::airCount == 0} {
+		# store takeoff state
+		set ::takeoffState $::currState 
+		set ::takeoffTime $::currTime
+	    }
+
+	    set ::airCount [expr $::airCount + 1]
+	    if {$::airCount > $::flightTh} {
+		startFlight
+	    }
+	}
+    } elseif {$::skierState == $::out} {
+	set ::outCount [expr $::outCount + 1]
+    }
+}
+
+#------------------------------
+# gndContact - determine if ground contact was detected
+#------------------------------
+
+proc gndContact { arg } {
+    set state $::currState
+    if {$state != ""} {
+	set numGndCnt [lindex $state 9]
+	if [expr {$numGndCnt != ""} && {$numGndCnt > 0}] {
+	    return 1
+	}
+    }
+
+    return 0
+}
+
+#------------------------------
+# _startFlight - transition to flight state
+#                (default behavior)
+#------------------------------
+
+proc _startFlight {} {
+    set ::skierState $::flight
+}
+
+#------------------------------
+# _startLanding - transition to landing state
+#                 (default behavior)
+#------------------------------
+
+proc _startLanding {} {
+    # determine jump info
+    set jumpTime [expr $::landTime - $::takeoffTime]
+
+    if [expr {$::jumpInfo == {}} && {$jumpTime > $::jumpThTime}] {
+	set numRot [rotCount [lindex $::takeoffState 4] \
+			[lindex $::landState 4]]
+	set from [locMap map [lindex $::takeoffState 2] \
+		      [lindex $::takeoffState 3]]
+	set to [locMap map [lindex $::landState 2] \
+		    [lindex $::landState 3]]
+	set ::jumpInfo [list $jumpTime $numRot $from $to]
+    } 
+
+    set ::skierState $::landing
+    set ::airCount 0
+}
+
+#------------------------------
+# _startGround - transition to on-ground state
+#                (default behavior)
+#------------------------------
+
+proc _startGround {} {
+    # check the accumulated forces to see how smooth the landing was
+    set os [onSkies $::currState]
+    if {$os && $::jumpInfo != {}} {
+	# ensure that a minimum number of ski points are in contact
+	# with ground/active objects
+	set bodyCount [lindex $::landContact 0]
+	set skiCount  [lindex $::landContact 1]
+
+	if {$skiCount > $bodyCount} {
+	    if {$skiCount > 1} {
+		processJump
+	    } else {
+		# it's unclear where the skier is grounded... so abort
+		# the state transition and still consider this as landing
+		return
+	    }
+	}
+    }
+
+    set ::skierState $::onGround
+    set ::airCount 0
+    set ::jumpInfo {}
+
+    set ::maxLandF $::f0
+    set ::landContact $::contact0
+}
+
+#------------------------------
+# _startUnconscious - transition to unconscious state
+#                     (default behavior)
+#------------------------------
+
+proc _startUnconscious {} {
+    set ::crashState $::currState
+    set ::crashTime $::currTime
+
+    # clear forces so that we only accummulate the crash forces
+    set ::crashLandF $::f0
+
+    set ::skierState $::out
+#    puts "unconscious at $::currTime"
+
+    set skiesOn [lindex $::currState 8]
+
+    if {$::unconsciousOk == 0} {
+	showFailMsg
+    }
+}
+
+#------------------------------
+# _startNextStage - transition to next-stage
+#                   (default behavior)
+#------------------------------
+
+proc _startNextStage {} {
+    set ::skierState $::nextStage
+}
+
+
+#------------------------------
+# _processJump - process a jump
+#                (default behavior)
+#------------------------------
+
+proc _processJump {} {
+    set numRot   [lindex $::jumpInfo 1]
+    set from     [lindex $::jumpInfo 2]
+    set to       [lindex $::jumpInfo 3]
+    set absNumRot [abs $numRot]
+
+    puts "from $from to $to"
+
+    if {$absNumRot > 0} {
+	if {[expr rand() < [expr $::cheerTh * $absNumRot]]} {
+	    sound queue cheer $::soundDir/cheer3.wav
+	}
+    }
+
+    if {$numRot == -1} {
+	playCom $::soundDir/fflip.wav 0
+    } elseif {$numRot == -2} {
+	playCom $::soundDir/fflip2.wav 0
+    } elseif {$numRot == 1} {
+	playCom $::soundDir/bflip.wav 0
+    } elseif {$numRot == 2} {
+	playCom $::soundDir/bflip2.wav 0
+    } else {
+	puts "numRot = $numRot"
+    }
+
+    
+    if {$absNumRot == 1} {
+	set ci [expr int(rand() * [llength $::rot1Com])]
+	set c [lindex $::rot1Com $ci]
+	playComAtTimes $c $::rot1ComFrac
+    } elseif {$absNumRot == 2} {
+	set ci [expr int(rand() * [llength $::rot2Com])]
+	set c [lindex $::rot2Com $ci]
+	playComAtTimes $c $::rot2ComFrac
+    } elseif {$absNumRot > 2} {
+	set ci [expr int(rand() * [llength $::rot2PlusCom])]
+	set c [lindex $::rot2PlusCom $ci]
+	playComAtTimes $c $::rot2PlusComFrac
+    }
+}
+
+#------------------------------
+# rotCount - count the number of CCW rotations
+#------------------------------
+
+proc rotCount { ang0 ang1 } {
+    set nAng0 [normRndRot $ang0]
+    set nAng1 [normRndRot $ang1]
+    set rot   [expr $nAng1 - $nAng0]
+
+    set rc   0
+    set sign 1
+    
+    if {$rot < 0} {
+	set sign -1
+	set rot [expr $rot * -1]
+    }
+
+    while {$rot > 0} {
+	if {$rot > 360} {
+	    set rc [expr $rc + 1]
+	    set rot [expr $rot - 360]
+	} elseif {$rot > 180} {
+	    set rc [expr $rc + 1]
+	    break;
+	} else {
+	    break;
+	}
+    }
+
+    return [expr $rc * $sign]
+}
+
+#------------------------------
+# normRot - normalize rotation to within -180 to 180 degrees
+#------------------------------
+
+proc normRot { rot } {
+    while {$rot > 180} {
+	set rot [expr $rot - 360]
+    }
+
+    while {$rot < -180} {
+	set rot [expr $rot + 360]
+    }
+
+    return $rot
+}
+
+#------------------------------
+# normRndRot - normalize and round the rotation to the closest 0 or 180 angle
+#------------------------------
+
+proc normRndRot { rot } {
+    set nRot [normRot $rot]
+    set nrRot $rot
+    if {[expr {$nRot >= 0} && {$nRot <= 90}]} {
+	set nrRot [expr $rot - $nRot]
+    } elseif {[expr {$nRot > 90} && {$nRot <= 180}]} {
+	set nrRot [expr $rot - $nRot + 180.0]
+    } elseif {[expr {$nRot > -180} && {$nRot <= -90}]} {
+	set nrRot [expr $rot - $nRot - 180.0]
+    } else {
+	set nrRot [expr $rot - $nRot]
+    }
+
+    return $nrRot
+}
+
+#------------------------------
+# _sideEffects - generate side effects
+#                (default behavior)
+#------------------------------
+
+proc _sideEffects { arg } {
+    if {$::skierState == $::nextStage} { return }
+
+    if {$::skierState == $::onGround} {
+    } elseif {$::skierState == $::flight} {
+	set ::maxLandF [maxF $::maxLandF]
+    } elseif {$::skierState == $::landing} {
+	set ::maxLandF [maxF $::maxLandF]
+
+	# accumulate contact points
+	if {$::currCol != {}} {
+	    set cl [lindex $::currCol 2]
+
+	    for {set i 0} {$i < [llength $cl]} {set i [expr $i + 1]} {
+		set c [lindex $cl $i]
+		for {set j 0} {$j <$::numTags} {set j [expr $j + 1]} {
+		    set cIndex [expr $j + 1]
+		    set newC [lindex $c $cIndex]
+		    if {$newC > [lindex $::landContact $j]} {
+			set ::landContact \
+			    [lreplace $::landContact $j $j $newC]
+		    }
+		}
+	    }
+	}
+    } elseif {$::skierState == $::out} {
+	if {$::outCount < $::outTh} {
+#	    set ::crashLandF [accumF $::crashLandF]
+	}
+    }
+
+#    crashEval::sideEffects $arg
+}
+
+#------------------------------
+# maxF - 
+#   determine the maximum collision forces given the history of 
+#   the maximum forces detected so far
+#------------------------------
+
+proc maxF { oldF } {
+    # maximum forces
+    if {$::currState != {}} {
+	for {set i 0} {$i < [expr $::numLinks * 2]} {set i [expr $i + 1]} {
+	    set fIndex [expr $i + 10]
+	    set newF [abs [lindex $::currState $fIndex]]
+	    if {$newF > [lindex $oldF $i]} {
+		set oldF [lreplace $oldF $i $i $newF]
+	    }
+	}
+    }
+
+    return $oldF
+}
+
+#------------------------------
+# accumF - accummulate collision forces
+#------------------------------
+
+proc accumF { oldF } {
+    # accummulate forces
+    if {$::currState != {}} {
+	for {set i 0} {$i < [expr $::numLinks * 2]} {set i [expr $i + 1]} {
+	    set fIndex [expr $i + 10]
+	    set newF [abs [lindex $::currState $fIndex]]
+	    set f [expr $newF + [lindex $oldF $i]]
+	    set oldF [lreplace $oldF $i $i $f]
+	}
+    }
+
+    return $oldF
+}
+
+#------------------------------
+# _reset - reset states
+#          (default behavior)
+#------------------------------
+
+proc _reset {} {
+    set ::currTime 0
+    set ::currState {}
+    set ::skierState $::onGround
+    set ::airCount 0
+    set ::landCount 0
+
+    set ::takeoffState {}
+    set ::takeoffTime 0
+    set ::landState {}
+    set ::landTime 0
+    set ::crashState {}
+    set ::crashTime 0
+
+    set ::f0 {}
+    for {set i 0} {$i < [expr 2 * $::numLinks]} {set i [expr $i + 1]} {
+	lappend ::f0 0
+    }
+    set ::maxLandF $::f0
+    set ::crashLandF $::f0
+
+    set ::contact0 {}
+    for {set i 0} {$i < $::numTags} {set i [expr $i + 1]} {
+	lappend ::contact0 0
+    }
+    set ::landContact $::contact0
+
+    set ::jumpInfo {}
+    set ::goalCount 0
+    set ::outCount 0
+
+    set ::noComment 0
+
+    crashEval::reset
+}
+
+#------------------------------
+# onSkies - determine if the skier's on his skies
+#------------------------------
+
+proc onSkies { state } {
+    # examine the y component of the forces acting on all links
+    # -> the skier is on his skies if the y component on the skies is
+    #    greater than those from the other links
+    
+    set skiesFy [lindex $state 11]
+    set thighFy [lindex $state 13]
+    set torsoFy [lindex $state 15]
+    set armFy   [lindex $state 17]
+
+    if {$skiesFy < $thighFy} { 
+	puts "thigh collision"
+	return 0 
+    }
+    if {$skiesFy < $torsoFy} { 
+	puts "torso collision"
+	return 0 
+    }
+    if {$skiesFy < $armFy} { 
+	puts "arm collision"
+	return 0 
+    }
+
+    return 1
+} 
+
+#------------------------------
+# landOnSkies - 
+#   use the info accummulated during landing to determine whether
+#   the skier's standing on his skies
+#------------------------------
+
+proc landOnSkies {} {
+    # ensure that a minimum number of ski points are in contact
+    # with ground/active objects
+    set bodyCount [lindex $::landContact 0]
+    set skiCount  [lindex $::landContact 1]
+    
+    if [expr {$skiCount > $bodyCount} && {$skiCount > 1}] {
+	return 1
+    } else {
+	puts "bodyCount = $bodyCount"
+	puts "skiCount = $skiCount"
+	return 0
+    }
+
+    return 1;
+
+}
+
+#------------------------------
+# goal -
+#   helper routine that verifies that the goal is reached IFF the
+#   goal condition is met ::goalTh number of times in a row
+#------------------------------
+
+proc goal { goalMet } {
+    if {$goalMet == 1} {
+	if {$::goalCount > $::goalTh} {
+	    goalReached
+	} else {
+	    set ::goalCount [expr $::goalCount + 1]
+	}
+    } else {
+	set ::goalCount 0
+    }
+}
+
+#------------------------------
+# abs - absolute value
+#------------------------------
+
+proc abs { n } {
+    if { $n < 0 } {
+	return [expr $n * -1]
+    }
+    return $n
+}
+
+#------------------------------
+# playCom - play comment
+#------------------------------
+
+proc playCom { fname force } {
+    if {[expr {$::noComment == 0} || {$force}]} {
+	sound queue comment $fname
+    } 
+}
+
+#------------------------------
+# playComAtTimes - play comment with "frac" probability
+#------------------------------
+
+proc playComAtTimes { fname frac } {
+    if {$::noComment == 0} {
+	if {[expr rand()] < $frac} {
+	    sound queue comment $fname
+	    return 1
+	}
+    } 
+    return 0
+}
+
+#------------------------------
+# almostLand
+# - determine if the skier almost landed:
+#   - if the ski angle is close to the ground angle
+#------------------------------
+
+proc almostLand { gndAng } {
+    set ang [expr [normRot [lindex $::currState 4]] - $gndAng]
+    set absAng [abs $ang]
+
+    return [expr $absAng < $::almostLandThAng]
+}
+
+# return the name binded to the location where the skier is
+proc currLoc {} {
+    return [locMap map [lindex $::currState 2] \
+		[lindex $::currState 3]]
+}
+
+#------------------------------
+# accumCol - 
+#   accummulate collisions to the specific type of object for
+#   specific body parts
+#------------------------------
+
+proc accumCol { colType colIndex origCol } {
+    # check for tree collisions
+    if {$::currCol != {}} {
+	set cl [lindex $::currCol 2]
+	for {set i 0} {$i < [llength $cl]} {set i [expr $i + 1]} {
+	    set c [lindex $cl $i]
+	    set type [lindex $c 0]
+	    if {$type == $colType} {
+		if {$colIndex == 0} {
+		    return [expr $origCol + 1]
+		} elseif {[lindex $c $colIndex] > 0} {
+		    return [expr $origCol + 1]
+		}
+	    }
+	}
+    }
+
+    return $origCol
+}
+
+proc _goalReached {} {
+    playCom $::soundDir/stageComp.wav 1
+    message "Stage Completed!\nPress <Esc> to continue"
+    startNextStage
+}
+
+set ::nextStageName ""
+
+
+proc _changeStage {} {
+    keyr
+}
+
+#----------------------------------------------------------------------
+# helper modules
+#----------------------------------------------------------------------
+
+source ski/crashEval.tcl
+source ski/landEval.tcl
+
+#----------------------------------------------------------------------
+# overridable routines
+#----------------------------------------------------------------------
+
+proc startFlight {} {
+    _startFlight
+}
+
+proc startLanding {} {
+    _startLanding
+}
+
+proc startGround {} {
+    _startGround
+}
+
+proc startUnconscious {} {
+    _startUnconscious
+}
+
+proc sideEffects { arg } {
+    _sideEffects arg
+}
+
+proc processJump {} {
+    _processJump
+}
+
+proc startNextStage {} {
+    _startNextStage
+}
+
+proc reset {} {
+    _reset
+}
+
+proc changeStage {} {
+    _changeStage 
+}
+
+proc goalReached {} {
+    _goalReached
+}
+
+proc stageComp {} {
+    _changeStage
+}
+
+#----------------------------------------------------------------------
+# misc routines
+#----------------------------------------------------------------------
+
+set ::goalText ""
+
+#------------------------------
+# showGoal - show the goal for this scenario
+#------------------------------
+
+proc showGoal {} {
+    if [preview] { return }
+    < goal.tcl
+}
+
+#------------------------------
+# showFailMsg - show message to describe how to continue
+#               from a crash
+#------------------------------
+
+proc showFailMsg {} {
+    message "Press <space> to retry\nPress <Esc> to abort"
+}
+
+#------------------------------
+# guiBeginScenario - 
+#   function that's called at the beginning of a scenario
+#------------------------------
+
+proc guiBeginScenario {} {
+    #  to be overridden
+}
+
+#----------------------------------------------------------------------
+# key callbacks
+#----------------------------------------------------------------------
+
+#------------------------------
+# keyg - display the goal of this scenario
+#------------------------------
+
+proc keyg {} {
+    showGoal
+}
+
+# list of hints (to be overriden in scenario specific scripts)
+set ::hint {}
+
+#------------------------------
+# keyh - display hint
+#------------------------------
+
+proc keyh {} {
+    set hi [expr int(rand() * [llength $::hint])]
+    set h [lindex $::hint $hi]
+
+    message $h
+}

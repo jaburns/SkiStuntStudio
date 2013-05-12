@@ -1,0 +1,10 @@
+new_link
+new_pt 0.0 0 1
+new_pt 0.0 3 1
+new_pt 0.3 3 1
+new_pt 0.3 0 1
+link_close
+jt_org 1 0.15 0
+mass 1.000000
+link_kp 2000
+link_kd 200

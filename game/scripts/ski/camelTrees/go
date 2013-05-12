@@ -1,0 +1,66 @@
+set baseDir ski
+set scenarioDir $baseDir/camelTrees
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.pts
+loadtexobj $scenarioDir/gnd.tess $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+gnd slices 30
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+< $::charDir/common.setup
+
+set ::restLocX -1.5 
+set ::restLocY 0.9
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName  >> tree skiing"
+
+#----------------------------------------------------------------------
+# trees
+#----------------------------------------------------------------------
+
+< props/newTree.setup
+artfig setname tree7
+restpose 20.836000 -10.308000
+
+< props/newTree.setup
+artfig setname tree6
+restpose 22.086000 -10.695000
+
+< props/newTree.setup
+artfig setname tree5
+restpose 23.333000 -11.284000
+
+proc resetActiveObj {} {
+    world setaf tree7
+    restpose 20.836000 -10.308000
+    artfig sleep
+		
+    world setaf tree6
+    restpose 22.086000 -10.695000
+    artfig sleep
+
+    world setaf tree5
+    restpose 23.333000 -11.284000
+    artfig sleep
+}
+
+resetActiveObj
+initSimSpeed 1
+
+if [preview] {
+    accumZoom 0
+    zoom -3
+    winview 14 -5
+}

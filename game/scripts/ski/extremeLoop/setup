@@ -1,0 +1,8 @@
+set baseDir ski
+set scenarioDir $baseDir/extremeLoop
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/previewGL.jpg repeat
+title "$::charName >> Terrain edit"

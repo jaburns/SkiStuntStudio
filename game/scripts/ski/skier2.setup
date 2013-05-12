@@ -1,0 +1,57 @@
+#----------------------------------------------------------------------
+# skier
+#----------------------------------------------------------------------
+
+set skiDir $::skiDir
+
+# --- articulated figure ---
+< $skiDir/skier.afig
+artfig setname skier2
+
+# --- skin for the skier with skies attached ---
+loadskin $skiDir/skier_lski.skin $skiDir/skier_ski_tess.wobj $skiDir/skier2_tex.jpg
+settexobjname lski2.skin
+texObj lski2.skin dispOrder 50
+loadskin $skiDir/skier_body.skin $skiDir/skier_body_tess.wobj $skiDir/skier2_tex.jpg
+settexobjname body2.skin
+texObj body2.skin dispOrder 50
+loadskin $skiDir/skier_rski.skin $skiDir/skier_ski_tess.wobj $skiDir/skier2_tex.jpg
+settexobjname rski2.skin
+texObj rski2.skin dispOrder 50
+loadskin $skiDir/skier_arm.skin $skiDir/skier_arm_tess.wobj $skiDir/skier2_tex.jpg
+settexobjname arm2.skin
+texObj arm2.skin dispOrder 50
+
+# --- link masses (not used unless "dgen foo" is used) ---
+mass 5 1
+mass 5 2
+mass 10 3
+mass 3 4
+
+# --- joint parameters ---
+jt_pd 1 0 0.00 -10 10 -1 1 
+jt_pd 2 1.7 3 0 100 -5 5
+jt_pd 3 0.7 3 -110 20 -4 4
+jt_pd 4 0.3 0.3 -90 70 -2 2
+
+# --- skier dynamics ---
+dgen dyn_ski2
+
+# -- sign for associcating the joint torq dir to joint extension dir
+jt_ext 3 -1
+jt_ext 4 -1
+
+# --- make the link borders invisible
+tog_link
+
+# --- the skier cannot fall asleep
+artfig sleep
+
+#----------------------------------------------------------------------
+# unload character routine
+#----------------------------------------------------------------------
+
+proc unloadChar {} {
+    world setaf skier2
+    world delaf
+}

@@ -1,0 +1,191 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/2
+set ::scenarioDir $scenarioDir
+
+loadtexobj $scenarioDir/gnd0.wobj $scenarioDir/tex0.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+
+loadtexobj $scenarioDir/gnd1.wobj $scenarioDir/tex2.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd1.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd2.wobj $scenarioDir/tex1.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+
+loadtexobj $scenarioDir/gnd3.wobj $scenarioDir/tex1.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+
+loadtexobj $scenarioDir/gnd4.wobj $scenarioDir/tex2.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd4.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd5.wobj $scenarioDir/tex1.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd5.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd6.wobj $scenarioDir/tex2.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd6.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+loadtexobj $scenarioDir/gnd7.wobj $scenarioDir/tex1.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd7.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+< $::charDir/common.setup
+
+set ::restLocX -8.386086
+set ::restLocY 8.908831
+set ::goalText ""
+set ::hint [list ""]
+
+texload brick $scenarioDir/background.jpg repeat
+
+title "$::charName >> Jungle Jetpack"
+
+proc sideEffects { arg } {
+
+    _sideEffects arg
+    if {$::skierState == $::nextStage} { return }
+    set goalMet 0
+
+    if {$::skierState != $::out} {
+    if {$::skierState == $::onGround} {
+    if {[onSkies $::currState]} {
+        set x [lindex $::currState 2]
+        set y [lindex $::currState 3]
+        if {$x > 48.32461 && $x < 190.0483} {
+        if {$y < 23.15018 && $y > 10.08865} {
+            set goalMet 1
+        }}
+    }
+    }
+    }
+    goal $goalMet
+}
+
+
+< props/newCrate.setup
+artfig setname activeobj0
+
+< props/newJetpackCrate.setup
+artfig setname activeobj1
+usemonitor forceTrigger 0 -1 1 1 activeobj1collect "reset" "trig"
+usemonitor forceTrigger 0  1 1 1 activeobj1collect "reset" "trig"
+proc activeobj1collect {argv} {
+    if {$argv == "trig"} {
+        enableJetpack
+        world setaf activeobj1
+        artfig active false
+    }
+}
+
+< props/newNopackCrate.setup
+artfig setname activeobj2
+usemonitor forceTrigger 0 -1 1 1 activeobj2collect "reset" "trig"
+usemonitor forceTrigger 0  1 1 1 activeobj2collect "reset" "trig"
+proc activeobj2collect {argv} {
+    if {$argv == "trig"} {
+        disableJetpack
+        world setaf activeobj2
+        artfig active false
+    }
+}
+
+< props/newNopackCrate.setup
+artfig setname activeobj3
+usemonitor forceTrigger 0 -1 1 1 activeobj3collect "reset" "trig"
+usemonitor forceTrigger 0  1 1 1 activeobj3collect "reset" "trig"
+proc activeobj3collect {argv} {
+    if {$argv == "trig"} {
+        disableJetpack
+        world setaf activeobj3
+        artfig active false
+    }
+}
+
+< props/newNopackCrate.setup
+artfig setname activeobj4
+usemonitor forceTrigger 0 -1 1 1 activeobj4collect "reset" "trig"
+usemonitor forceTrigger 0  1 1 1 activeobj4collect "reset" "trig"
+proc activeobj4collect {argv} {
+    if {$argv == "trig"} {
+        disableJetpack
+        world setaf activeobj4
+        artfig active false
+    }
+}
+
+proc resetActiveObj {} {
+
+    disableJetpack
+
+    world setaf activeobj0
+    restpose -16.58247 -25.10053 0
+    artfig sleep
+
+    world setaf activeobj1
+    restpose 18.37304 7.860734 0
+    artfig active true
+    artfig sleep
+
+    world setaf activeobj2
+    restpose 22.14904 15.44473 0
+    artfig active true
+    artfig sleep
+
+    world setaf activeobj3
+    restpose 22.14904 16.62873 0
+    artfig active true
+    artfig sleep
+
+    world setaf activeobj4
+    restpose 22.11704 17.78074 0
+    artfig active true
+    artfig sleep
+}
+
+world setaf skier
+link setloop jetPack
+texObj jetPack.skin tex 0
+loop active false
+jetpack 3 1.10715 1.307508 -0.10 -0.5 700 step
+extf name jetpackobject
+extf eval flameTexObj jetPackFlame.skin
+extf eval flameSound "jet -vol 0.85"
+extf active false
+proc enableJetpack {} {
+    world setaf skier
+    artfig setlink 3
+    link setloop jetPack
+    loop active true
+    texObj jetPack.skin tex 1
+    world setextf jetpackobject
+    extf active true
+}
+proc disableJetpack {} {
+    world setaf skier
+    artfig setlink 3
+    link setloop jetPack
+    loop active false
+    texObj jetPack.skin tex 0
+    world setextf jetpackobject
+    extf active false
+    texObj jetPackFlame.skin tex 0
+    extf active false
+    sound stop "jet"
+}

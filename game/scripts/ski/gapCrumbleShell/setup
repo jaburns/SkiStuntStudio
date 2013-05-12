@@ -1,0 +1,8 @@
+set baseDir ski
+set scenarioDir $baseDir/gapCrumbleShell
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/previewGL.jpg repeat
+title "$::charName >> bridge"

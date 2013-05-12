@@ -1,0 +1,9 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/0
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/preview.jpg repeat
+title "$::charName >> Dark Cavern"
+

@@ -1,0 +1,121 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/6
+set ::scenarioDir $scenarioDir
+
+loadtexobj $scenarioDir/gnd0.wobj $scenarioDir/tex0.jpg
+loadtexobjtxfm $baseDir/sssDefault.txfm
+gndfile $scenarioDir/gnd0.pts
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+< $::charDir/common.setup
+
+set ::restLocX -17.46893
+set ::restLocY 12.61549
+set ::goalText "Jump over the tree, and ski to the end of the level."
+set ::hint [list ""]
+
+texload brick $scenarioDir/background.jpg repeat
+
+title "$::charName >> Demo Level"
+
+proc sideEffects { arg } {
+
+    _sideEffects arg
+    if {$::skierState == $::nextStage} { return }
+    set goalMet 0
+
+    if {$::skierState != $::out} {
+    if {$::skierState == $::onGround} {
+    if {[onSkies $::currState]} {
+        set x [lindex $::currState 2]
+        set y [lindex $::currState 3]
+        if {$x > 52.10649 && $x < 118.0245} {
+        if {$y < 0.1379318 && $y > -15.24293} {
+            set goalMet 1
+        }}
+    }
+    }
+    }
+    goal $goalMet
+}
+
+
+< props/newTree.setup
+artfig setname activeobj0
+
+< props/newTree.setup
+artfig setname activeobj1
+
+< props/newBigBall.setup
+artfig setname activeobj2
+
+< props/newBigBall.setup
+artfig setname activeobj3
+
+< props/newTree.setup
+artfig setname activeobj4
+
+< props/newSnowmanHead.setup
+artfig setname activeobj5
+
+proc resetActiveObj {} {
+
+    disableJetpack
+
+    world setaf activeobj0
+    restpose -6.781422 8.552994 0
+    artfig sleep
+
+    world setaf activeobj1
+    restpose 44.3588 -7.230534 89.99999
+    artfig sleep
+
+    world setaf activeobj2
+    restpose 44.77446 -9.633555 0
+    artfig sleep
+
+    world setaf activeobj3
+    restpose 44.784 -8.063972 0
+    artfig sleep
+
+    world setaf activeobj4
+    restpose 45.9088 -7.180533 -89.99999
+    artfig sleep
+
+    world setaf activeobj5
+    restpose 44.96265 -6.472826 0
+    artfig sleep
+}
+
+world setaf skier
+link setloop jetPack
+texObj jetPack.skin tex 0
+loop active false
+jetpack 3 1.10715 1.307508 -0.10 -0.5 700 step
+extf name jetpackobject
+extf eval flameTexObj jetPackFlame.skin
+extf eval flameSound "jet -vol 0.85"
+extf active false
+proc enableJetpack {} {
+    world setaf skier
+    artfig setlink 3
+    link setloop jetPack
+    loop active true
+    texObj jetPack.skin tex 1
+    world setextf jetpackobject
+    extf active true
+}
+proc disableJetpack {} {
+    world setaf skier
+    artfig setlink 3
+    link setloop jetPack
+    loop active false
+    texObj jetPack.skin tex 0
+    world setextf jetpackobject
+    extf active false
+    texObj jetPackFlame.skin tex 0
+    extf active false
+    sound stop "jet"
+}

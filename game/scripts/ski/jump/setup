@@ -1,0 +1,8 @@
+set baseDir ski
+set scenarioDir $baseDir/jump
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/previewGL.jpg repeat
+title "$::charName >> jump (single)"

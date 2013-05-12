@@ -1,0 +1,26 @@
+#----------------------------------------------------------------------
+# constant definitions
+#----------------------------------------------------------------------
+
+# directory info
+set baseDir props
+set scenarioDir $baseDir
+
+# object base name + counter
+set counterName snowmanCount
+set objNameBase snowman
+
+# increment counter
+if [info exists $counterName] {
+    set $counterName [expr $$counterName + 1]
+} else {
+    set $counterName 1
+}
+set objName "$objNameBase[expr $$counterName]"
+
+< props/newBigBall.setup
+artfig setname "snowmanBody[expr $$counterName]"
+
+< props/newSnowmanHead.setup
+artfig setname "snowmanHead[expr $$counterName]"
+

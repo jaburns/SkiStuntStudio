@@ -1,0 +1,39 @@
+#----------------------------------------------------------------------
+# constant definitions
+#----------------------------------------------------------------------
+
+# directory info
+set baseDir props
+set propsDir $baseDir
+
+# object base name + counter
+set counterName bridgeBlk2Count
+set objNameBase bridgeBlk2
+
+# increment counter
+if [info exists $counterName] {
+    set $counterName [expr $$counterName + 1]
+} else {
+    set $counterName 1
+}
+set objName "$objNameBase[expr $$counterName]"
+
+#----------------------------------------------------------------------
+# object creation
+#----------------------------------------------------------------------
+
+world newaf
+< $propsDir/bridgeBlk2.afig
+artfig setname $objName
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_bridgeBlk2
+restpose 1 2
+usemonitor snowEffects
+
+loadskin $propsDir/bridgeStep.skin $propsDir/bridgeStep.wobj $propsDir/bridge.jpg
+settexobjname $objName.skin
+texObj $objName.skin dispOrder 80
+tog_link
+
+usemonitor hardLanding all softThud 500
+usemonitor impact signCrack 500

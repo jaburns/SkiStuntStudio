@@ -1,0 +1,21 @@
+set f -0.1
+new_link
+new_pt -1.0 -5 $f all
+new_pt -1.0 -0.0 $f all
+new_pt 0.13880007 -1.0940002 $f all
+new_pt 1.270401 -1.9239991 $f all
+new_pt 2.3876007 -2.501999 $f all
+new_pt 3.4832 -2.8399994 $f all
+new_pt 4.55 -2.95 $f all
+new_pt 5.5808015 -2.8440003 $f all
+new_pt 6.5684023 -2.5339997 $f all
+new_pt 7.5056033 -2.0320008 $f all
+new_pt 8.385202 -1.35 $f all
+new_pt 9.200004 -0.5 $f all
+new_pt 9.200004 -5 $f all
+link_close
+jt_org 1 0.15 0
+mass 1.000000
+link_kp 2000
+link_kd 200
+

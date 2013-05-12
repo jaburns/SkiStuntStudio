@@ -1,0 +1,158 @@
+set baseDir ski
+set scenarioDir $baseDir/jump
+set ::scenarioDir $scenarioDir
+set propsDir props
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd2.txt
+loadtexobj $scenarioDir/gnd_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+loadtexobj $propsDir/square_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_1.txfm
+
+loadtexobj $propsDir/square_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_2.txfm
+
+loadtexobj $propsDir/square_tess.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd_3.txfm
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+gnd slices 30
+
+#----------------------------------------------------------------------
+# background setup
+#----------------------------------------------------------------------
+
+set ::treeIndex 1
+set ::treeName ""
+
+proc newTree {} {
+    set ::treeName "t$::treeIndex"
+    set ::treeIndex [expr $::treeIndex + 1]
+}
+
+# --- group 1
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -60
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -60
+
+# --- group 2
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeBlur06.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder 100
+
+# --- group 3
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark05.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -60
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -100
+
+# --- group 4
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeBlur06.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder 100
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeBlur06.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder 100
+
+# --- group 5
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -100
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -100
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark05.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+
+#----------------------------------------------------------------------
+
+< $::charDir/common.setup
+
+set ::restLocX 2.3
+set ::restLocY 0.7
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName >> simple jump "
+#title "$::charName >> jump (single)"
+
+world sortTexObj
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/$::stuntEval
+showGoal
+#----------------------------------------------------------------------
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 7
+    camera fly $::scenarioDir/camera.path
+}
+
+if [preview] {
+    accumZoom 0
+    zoom -4
+    winview 20 -5
+}

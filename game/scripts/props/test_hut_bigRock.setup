@@ -1,0 +1,34 @@
+proc resetRocks {} {
+  world setaf bigRock1
+  restpose -10.763364 2.207803 48.927372
+  artfig sleep
+
+  world setaf bigRock2
+  restpose -10.590280 1.824410 -33.254295
+  artfig sleep
+
+  world setaf bigRock3
+  restpose -10.590279 0.143377 -4.209198
+  artfig sleep
+}
+
+#----------------------------------------------------------------------
+# create rocks
+#----------------------------------------------------------------------
+< props/newBigRock.setup
+artfig setname bigRock1
+artfig sleep
+
+< props/newBigRock.setup
+artfig setname bigRock2
+artfig sleep
+
+< props/newBigRock.setup
+artfig setname bigRock3
+artfig sleep
+
+resetRocks
+
+proc resetActiveObj {} {
+  resetRocks
+}

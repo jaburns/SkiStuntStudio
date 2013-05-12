@@ -1,0 +1,112 @@
+set baseDir ski
+set scenarioDir $baseDir/ravine
+set ::scenarioDir $scenarioDir
+
+# gndfile $scenarioDir/gnd.txt
+
+gndfile $scenarioDir/gnd_1.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 30
+
+gndfile $scenarioDir/gnd_2.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 5
+
+gndfile $scenarioDir/gnd_3.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 30
+
+loadtexobj $scenarioDir/gnd_tess.wobj $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd_tess.txfm
+
+< $::charDir/common.setup
+
+set ::restLocX -28
+set ::restLocY 14
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName >> ravine"
+
+zoom -2
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+#----------------------------------------------------------------------
+# load in active objects
+#----------------------------------------------------------------------
+
+world newaf
+< $scenarioDir/corner1.afig
+artfig setname corner1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ravine_corner1
+artfig anchored true
+usemonitor forceTrigger 0 -1 2000 1 breakCorner "reset 1" "trig 1"
+usemonitor hardLanding all heavyThud 5000
+artfig type GndLike
+
+loadskin $scenarioDir/corner1.skin $scenarioDir/corner1_tess.wobj $scenarioDir/gnd.jpg
+tog_link
+
+world newaf
+< $scenarioDir/corner2.afig
+artfig setname corner2
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ravine_corner2
+artfig anchored true
+usemonitor forceTrigger 0 -1 1500 1 breakCorner "reset 2" "trig 2"
+usemonitor hardLanding all heavyThud 3000
+artfig type GndLike
+
+loadskin $scenarioDir/corner2.skin $scenarioDir/corner2.wobj $scenarioDir/gnd.jpg
+tog_link
+
+proc breakCorner { arg } {
+  set argv [split $arg " "]
+  set cmd [lindex $argv 0]
+  set num [lindex $argv 1]
+  set name "corner$num"
+
+  if {$cmd == "reset"} {
+    world setaf $name
+    artfig anchored true
+  } elseif {$cmd == "trig"} {
+    world setaf $name
+    artfig anchored false
+  }
+}
+
+proc resetActiveObj {} {
+  world setaf corner1
+  restpose -14.905 8.1949
+  artfig anchored true
+
+  world setaf corner2
+  restpose 5.269723 -1.522869
+  artfig anchored true
+}
+
+#----------------------------------------------------------------------
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 10
+    camera fly $::scenarioDir/camera.path
+}
+
+set ::winviewX -5
+set ::winviewY 0
+
+if [preview] {
+    accumZoom 0
+    zoom -3
+    winview $::winviewX $::winviewY
+}

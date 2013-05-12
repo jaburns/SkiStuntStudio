@@ -1,0 +1,27 @@
+set baseDir rock
+set scenarioDir $baseDir
+
+gndfile $scenarioDir/gnd.txt
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+< $scenarioDir/rock.afig
+artfig setname rock1
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 1.5 1.5
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname rock2
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 1.7 3 10
+
+< $scenarioDir/rock.keys
+
+set dt_disp 0.004

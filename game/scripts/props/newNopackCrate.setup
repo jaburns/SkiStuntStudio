@@ -1,0 +1,37 @@
+#----------------------------------------------------------------------
+# constant definitions
+#----------------------------------------------------------------------
+
+# directory info
+set baseDir props
+set propsDir $baseDir
+
+# object base name + counter
+set counterName nopackCrateCount
+set objNameBase nopackCrate
+
+# increment counter
+if [info exists $counterName] {
+    set $counterName [expr $$counterName + 1]
+} else {
+    set $counterName 1
+}
+set objName "$objNameBase[expr $$counterName]"
+
+#----------------------------------------------------------------------
+# object creation
+#----------------------------------------------------------------------
+
+world newaf
+< $propsDir/box.afig
+artfig setname $objName
+mass 2 1
+jt_pd 1 0 0.00 -10 10 -1 1
+dgen dyn_box
+restpose 1 2
+usemonitor snowEffects
+
+loadskin $scenarioDir/crate.skin $scenarioDir/square_tess.wobj $scenarioDir/nopackCrate.jpg
+settexobjname $objName.skin
+texObj $objName.skin dispOrder 60
+tog_link

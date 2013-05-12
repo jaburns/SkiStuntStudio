@@ -1,0 +1,8 @@
+set baseDir ski
+set scenarioDir $baseDir/extremeCrateJet
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/previewGL.jpg repeat
+title "$::charName >> test1"

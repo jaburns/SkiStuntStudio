@@ -1,0 +1,58 @@
+set baseDir box
+set scenarioDir $baseDir
+
+world newaf
+< $scenarioDir/box.afig
+artfig setname box1
+mass 2 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_box
+
+world newaf
+< $scenarioDir/box.afig
+artfig setname box2
+mass 2 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_box
+
+world newaf
+< $scenarioDir/box.afig
+artfig setname box3
+mass 2 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_box
+
+world newaf
+< $scenarioDir/box.afig
+artfig setname box4
+mass 2 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_box
+
+world newaf
+< $scenarioDir/box.afig
+artfig setname box5
+mass 2 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_box
+
+world newaf
+< $scenarioDir/box.afig
+artfig setname box6
+mass 2 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_box
+
+world setaf box1
+restpose 1 0.001
+world setaf box2
+restpose 1 1.002
+world setaf box3
+restpose 1 2.003
+
+world setaf box4
+restpose 5 0.001
+world setaf box5
+restpose 5 1.002
+world setaf box6
+restpose 5 2.003

@@ -1,0 +1,46 @@
+set baseDir ski
+set scenarioDir $baseDir/camel
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.pts
+loadtexobj $scenarioDir/gnd.tess $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+gnd slices 30
+
+< $::charDir/common.setup
+
+set ::restLocX -1.5 
+set ::restLocY 0.9
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName >> camel"
+
+#----------------------------------------------------------------------
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 7
+    camera fly $::scenarioDir/camera.path
+}
+
+set ::winviewX 30
+set ::winviewY -5
+
+if [preview] {
+    accumZoom 0
+    zoom -5
+    winview $::winviewX $::winviewY
+}

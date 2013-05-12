@@ -1,0 +1,54 @@
+set baseDir ski
+set scenarioDir $baseDir/hutRock
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.txt
+loadtexobj $scenarioDir/gnd_tess.wobj $scenarioDir/gnd3.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+loadtexobj $scenarioDir/gndExt.wobj $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+< $::charDir/common.setup
+
+set ::restLocX -28.5
+set ::restLocY 14.5
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+world setaf skier
+restpose $::restLocX $::restLocY
+simulate set_rtratio 1
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName  >> hut + rocks"
+
+#----------------------------------------------------------------------
+#  falling rocks
+#----------------------------------------------------------------------
+
+< props/test_hut_bigRock.setup
+
+#----------------------------------------------------------------------
+
+proc autoscroll {} {
+     camera fps 60
+     camera speed 10
+     camera fly $::scenarioDir/camera.path
+}
+
+if [preview] {
+    accumZoom 0
+    zoom -4
+    winview -4 5
+}

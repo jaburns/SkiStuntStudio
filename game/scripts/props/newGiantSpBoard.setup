@@ -1,0 +1,39 @@
+#----------------------------------------------------------------------
+# constant definitions
+#----------------------------------------------------------------------
+
+# directory info
+set baseDir props
+set scenarioDir $baseDir
+
+# object base name + counter
+set counterName giantSpringBoardCount
+set objNameBase giantSpringBoard
+
+# increment counter
+if [info exists $counterName] {
+    set $counterName [expr $$counterName + 1]
+} else {
+    set $counterName 1
+}
+set objName "$objNameBase[expr $$counterName]"
+
+#----------------------------------------------------------------------
+# object creation
+#----------------------------------------------------------------------
+
+world newaf
+< $scenarioDir/giantSpBoard.afig
+artfig setname $objName
+
+loadskin $scenarioDir/springBoard.skin $scenarioDir/springBoard_tess.wobj $scenarioDir/springBoard.jpg
+tog_link
+
+jt_pd 1 10 3 0 10 -100 100 
+jt_pd 2 5 3 -30 30 -80 80
+jt_pd 3 5 3 -30 30 -50 50
+
+dgen dyn_springBoard
+
+sound load springBoard $::soundDir/springBoard.wav
+usemonitor impact springBoard 200

@@ -1,0 +1,14 @@
+new_link
+# new_pt 4.907926 -2.343147
+new_pt 4.85 -2.283 1 all
+new_pt 2.216505 -1.196800 0 all
+new_pt 2.166663 -0.648548 0 all
+new_pt 2.615234 -0.349501 0 all
+new_pt 5.172089 -1.487250 0 all
+new_pt 5.213393 -1.611161 1 all
+# new_pt 5.269723 -1.522869
+link_close
+jt_org 1 5.269723 -1.522869
+mass 1.000000
+link_kp 2000
+link_kd 200

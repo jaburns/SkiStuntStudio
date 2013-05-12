@@ -1,0 +1,261 @@
+# clear routine
+proc resetActiveObj {} {}
+
+set skiDir santaNew
+
+#----------------------------------------------------------------------
+# skier
+#----------------------------------------------------------------------
+
+# --- articulated figure ---
+< $skiDir/santa.afig
+artfig setname skier
+
+# --- skin for the skier with skies attached ---
+loadskin $skiDir/skier_lski.skin $skiDir/skier_ski_tess.wobj $skiDir/santa.jpg
+settexobjname lski.skin
+texObj lski.skin dispOrder 50
+loadskin $skiDir/santa_body.skin $skiDir/santa_body_tess.wobj $skiDir/santa.jpg
+settexobjname body.skin
+texObj body.skin dispOrder 50
+loadskin $skiDir/skier_rski.skin $skiDir/skier_ski_tess.wobj $skiDir/santa.jpg
+settexobjname rski.skin
+texObj rski.skin dispOrder 50
+loadskin $skiDir/santa_arm.skin $skiDir/santa_arm_tess.wobj $skiDir/santa.jpg
+settexobjname arm.skin
+texObj arm.skin dispOrder 50
+
+# --- link masses (not used unless "dgen foo" is used) ---
+mass 5 1
+mass 5 2
+mass 8 3
+mass 1 4
+mass 3 5
+mass 2 6
+
+# --- joint parameters ---
+jt_pd 1 0 0.00 -10 10 -1 1 
+jt_pd 2 1.7 3 0 100 -5 5
+jt_pd 3 0.7 3 -110 20 -4 4
+jt_pd 4 0.00 0.01 -20 20 -0.5 0.5 0.07 0.02 -0.5 0.5
+jt_pd 5 0.3 0.3 -90 70 -2 2
+jt_pd 6 0.07 0.01 -15 15 -1 1
+
+# --- ski controls ---
+< $skiDir/santa.keys
+
+# --- skier dynamics ---
+dgen dyn_santa
+
+# -- sign for associcating the joint torq dir to joint extension dir
+jt_ext 3 -1
+jt_ext 5 -1
+
+# --- monitor the motion and states of the skier  ---
+usemonitor ski2Monitor $skiDir/ski.snd 1 skies lski.skin rski.skin dlski drski signCrack normJtPd relaxJtPd
+monitor eval maxHzImpact 1300
+monitor eval maxShock 13000
+monitor eval passOutSound uhh
+
+# --- enable braking ---
+usemonitor brakeMonitor 1 skies sl 0.5 step
+
+# --- sliding sound ---
+usemonitor slide Ground:Bridge:GndLike slide 1
+
+# --- thud sound ---
+usemonitor hardLanding all thud 1500
+usemonitor hardLanding back thudLow 1500
+
+# --- make the skier the object that is tracked by the camera ---
+artfig panTgt true
+
+# --- make the link borders invisible
+tog_link
+
+# --- the skier cannot fall asleep
+artfig noSleep true
+
+# --- tag the skier for special treatment
+artfig tag skier
+
+#----------------------------------------------------------------------
+# jet pack
+#----------------------------------------------------------------------
+
+set jpDir ski
+loadskin $jpDir/jetPack.skin $jpDir/jetPack_tess.wobj $jpDir/skier_tex.jpg
+settexobjname jetPack.skin
+texObj jetPack.skin dispOrder 50
+texObj jetPack.skin tex 0
+
+loadskin $jpDir/jetPackFlame.skin $jpDir/jetPackflame_tess.wobj $jpDir/skier_tex.jpg
+settexobjname jetPackFlame.skin
+texObj jetPackFlame.skin dispOrder 50
+texObj jetPackFlame.skin tex 0
+
+# disable the jet-pack loop
+artfig setlink 3
+link setloop jetPack
+loop active false
+
+#----------------------------------------------------------------------
+# right-ski
+#----------------------------------------------------------------------
+
+world newaf
+< $skiDir/skier_ski.afig
+artfig setname drski
+loadskin $skiDir/skier_rski.skin $skiDir/skier_ski_tess.wobj $skiDir/santa.jpg
+settexobjname drski.skin
+texObj drski.skin dispOrder 50
+tog_link
+
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ski2_ski
+
+# --- make the right ski invisible since it is not treated as a 
+# --- separate object yet
+# --- make the right ski invisible since it is not treated as a 
+# --- separate object yet
+artfig active false
+artfig intWithAll
+artfig subInt skier
+artfig subInt dlski
+
+# --- sound ---
+usemonitor slide Ground slideSoft 1
+usemonitor hardLanding all softThud 1500
+
+#----------------------------------------------------------------------
+# left-ski
+#----------------------------------------------------------------------
+
+world newaf
+< $skiDir/skier_ski.afig
+artfig setname dlski
+
+loadskin $skiDir/skier_rski.skin $skiDir/skier_ski_tess.wobj $skiDir/santa.jpg
+settexobjname drski.skin
+texObj dlski.skin dispOrder 50
+tog_link
+
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ski2_ski
+
+
+# --- make the right ski invisible since it is not treated as a 
+# --- separate object yet
+artfig active false
+artfig intWithAll
+artfig subInt skier
+artfig subInt dlski
+
+# --- sound ---
+usemonitor slide Ground slideSoft2 1
+usemonitor hardLanding all softThud 1500
+
+#----------------------------------------------------------------------
+# joint configuration routines
+#----------------------------------------------------------------------
+
+proc normJtPd {} {
+  world setaf skier
+  jt_pd 1 0 0.00 -10 10 -1 1
+  jt_pd 2 1.7 3 0 100 -10 10
+  jt_pd 3 0.7 3 -110 20 -8 8 
+  jt_pd 5 0.3 0.3 -90 70 -1 1
+}
+
+proc relaxJtPd {} {
+  world setaf skier
+  jt_pd 1 0 0.00 -10 10 -1 1 
+  jt_pd 2 0.0 0.1 0 100 -0.5 0.5 0.02 0.1 -6 6
+  jt_pd 3 0.0 0.1 -110 20 -0.5 0.5 0.02 0.1 -6 6
+  jt_pd 5 0.0 0.01 -90 70 -0.5 0.5 0.02 0.1 -1 1
+}
+
+#----------------------------------------------------------------------
+# basic sound
+#----------------------------------------------------------------------
+
+set soundDir ../sound
+set ::soundDir $soundDir
+
+sound load doh $soundDir/doh.wav
+sound load jet $soundDir/jet.wav
+sound load slide $soundDir/s3Loud.wav
+sound load slideSoft $soundDir/s3.wav
+sound load slideSoft2 $soundDir/s3.wav
+sound load thud $soundDir/thud2.wav
+sound load thudLow $soundDir/thudLow.wav
+sound load softThud $soundDir/softThud2.wav
+sound load explosn $soundDir/explosn.wav
+# sound load uhh $soundDir/uhh.wav
+sound load uhh $soundDir/hohoho3.wav
+sound load wind $soundDir/windClip.wav
+sound load heavyThud $soundDir/heavyThud.wav
+sound load signCrack $soundDir/signCrack.wav
+# sound load music $soundDir/rock2.wav
+
+#----------------------------------------------------------------------
+# non-scenario specific setup
+#----------------------------------------------------------------------
+
+set ::dt_disp 0.02
+set ::dt_sim 0.001
+set ::t_end 1e20
+
+world setaf skier
+world pbFrameSkip false
+world panOffset 0.3 -0.15
+# winsize 3 80 1020 660
+fullscreen
+autopan 0.01 0.01
+zoom -5
+grid
+hotzone
+tog_gnd
+
+mlmessage ""
+
+# tracewin 725 375 250 250
+
+proc initSimSpeed { rtratio } {
+
+    if {[info procs resetActiveObj] == "resetActiveObj"} { resetActiveObj }
+    if {[info procs seInit] == "seInit"} { seInit }
+    world setaf skier
+    restpose $::restLocX $::restLocY
+    simulate set_rtratio $rtratio 10
+    
+    set iter 5
+    set mr [simulate measureRtRatio]
+    puts $mr
+    while {[expr {$mr > [expr $rtratio * 0.8]} && {$iter > 0}]} {
+	puts "rtratio = $mr; redo... $iter"
+
+	if {[info procs resetActiveObj] == "resetActiveObj"} { resetActiveObj }
+	if {[info procs seInit] == "seInit"} { seInit }
+
+	world setaf skier
+	restpose $::restLocX $::restLocY
+	simulate set_rtratio $rtratio
+	set iter [expr $iter - 1]
+	set mr [simulate measureRtRatio]
+	puts $mr
+    }
+}
+
+# initialize stunt event controller
+set ::seEvalPeriod 0.1
+world seCtrl seEval $::seEvalPeriod
+source $skiDir/stuntEval.tcl
+
+# initialize stunt event generators
+world setaf skier
+usemonitor timeGen
+usemonitor stateGen 1 1.022 0.189
+usemonitor contactGen b sl
+
+

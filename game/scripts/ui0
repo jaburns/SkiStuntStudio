@@ -1,0 +1,49 @@
+#----------------------------------------------------------------------
+# ui - start up script for the simulation
+#----------------------------------------------------------------------
+
+puts "Reading startup script..."
+
+# load utility modules
+source util.tcl
+source playback.tcl
+source global.tcl
+source start.tcl
+
+# load Tk menu
+source glshMenu.tk
+
+# look for temporary directory
+# (used for coverting JPEG to PPM)
+if {[array get env TMP] != ""} {
+    set ::tmpDir $env(TMP)
+} else {
+    if {[file exists "c:/tmp"]} {
+	set ::tmpDir "c:/tmp"
+    } elseif {[file exists "c:/temp"]} {
+	set ::tmpDir "c:/temp"
+    } else {
+	file mkdir "c:/temp"
+	set ::tmpDir "c:/temp"
+    }
+}
+
+# look for djpeg installation
+set ::djpeg ""
+if {![file exists ../bin]} {
+    puts "Unable to find ../bin"
+} else {
+    if [file exists ../bin/djpeg.exe] {
+	set ::djpeg ../bin/djpeg.exe
+    } else {
+	puts "Unable to find ../bin/djpeg.exe"
+    }
+}
+
+# set default font size for the GUI
+set ::defFontSize 14
+
+# initial screen setup
+# fullscreen
+< logo.setup
+

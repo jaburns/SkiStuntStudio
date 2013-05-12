@@ -1,0 +1,9 @@
+< props/newGiantBall.setup
+< props/newBigBall.setup
+
+proc resetActiveObj {} {
+  world setaf giantBall1
+  restpose -25.322027 7.852879 -3.403679
+  world setaf bigball1
+  restpose -24.274471 9.962786
+}

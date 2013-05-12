@@ -1,0 +1,11 @@
+#mousemap 2 y 0 100
+#mousemap 3 y 0 -170
+#mousemap 4 y 0 140
+#mousemap 3 x -30 30 
+
+mousemap 2 y 100 0
+mousemap 3 y -130 20
+mousemap 4 y 20 70
+mousemap 3 x 20 -20 
+mousemap 2 x 60 0
+

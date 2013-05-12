@@ -1,0 +1,9 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/3
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/preview.jpg repeat
+title "$::charName >> Paper World"
+

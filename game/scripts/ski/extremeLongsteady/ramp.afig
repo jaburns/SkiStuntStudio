@@ -1,0 +1,17 @@
+new_link
+new_pt 0.0 0 0 all
+new_pt 1.50 0.00 0 all
+new_pt 2.00 0.05 0 all
+new_pt 2.50 0.15 0 all
+new_pt 3.00 0.35 0 all
+new_pt 3.50 0.75 0 all
+new_pt 4.00 1.55 0 all
+new_pt 4.50 2.35 0 all
+new_pt 5.20 2.35 0 all
+new_pt 5.20 -0.3 0 all
+new_pt 0.0 -0.3 0 all
+link_close
+jt_org 1 0.15 0
+mass 1.000000
+link_kp 2000
+link_kd 200

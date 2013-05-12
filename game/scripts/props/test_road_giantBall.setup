@@ -1,0 +1,17 @@
+< props/newGiantBall.setup
+
+world setaf skier
+usemonitor rectTrigger 19 -20 9 13.6 3 releaseBall
+
+proc resetActiveObj {} {
+  world setaf giantBall1
+  restpose 11.691059 24.223864
+  artfig sleep
+}
+
+proc releaseBall {} {
+  world setaf giantBall1
+  artfig wake
+}
+
+

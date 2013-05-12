@@ -1,0 +1,101 @@
+set baseDir ski
+set scenarioDir $baseDir/extremeCrateJet
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.pts
+loadtexobj $scenarioDir/gnd.tess $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.60
+gnd slices 30
+
+< $::charDir/common.setup
+    world setaf skier
+    artfig setmonitor Ski2Monitor
+    monitor eval maxHzImpact 1500
+    monitor eval maxDnImpact 1500
+
+set ::restLocX -1.5 
+set ::restLocY 0.9
+
+title "$::charName >> camel + crates"
+texload brick ../artwork/moraine128_blur.ppm repeat
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+
+#----------------------------------------------------------------------
+# add jet pack
+#----------------------------------------------------------------------
+
+world setaf skier
+
+# - activate collision geometry for jet-pack
+artfig setlink 3
+link setloop jetPack
+loop active false
+
+# - activate jet-pack artwork
+texObj jetPack.skin tex 1
+
+# forward balance
+# jetpack 3 0.87715 1.307508 -0.50 -0.2 1000 step
+
+# upward balance
+# jetpack 3 1.07715 1.307508 -0.20 -0.5 1000 step
+
+# upward balance - better
+# jetpack 3 1.08715 1.307508 -0.10 -0.5 700 step
+
+# upward balance - better
+#jetpack 3 1.10715 1.307508 -0.10 -0.5 700 step
+jetpack 3 1.10715 1.307508 -0.10 -0.5 700 step
+
+
+extf eval flameTexObj jetPackFlame.skin
+extf eval flameSound "jet -vol 0.85"
+
+
+#----------------------------------------------------------------------
+# crates
+#----------------------------------------------------------------------
+
+sound load thudBox ../sound/thudBox.wav
+
+< props/newCrate.setup
+artfig setname crate1
+
+< props/newCrate.setup
+artfig setname crate2
+
+< props/newCrate.setup
+artfig setname crate3
+
+proc resetActiveObj {} {
+    world setaf crate1
+    restpose 42.436554 -7.3051
+
+    world setaf crate2
+    restpose 42.536554 -6.2051
+    
+    world setaf crate3
+    restpose 13.836554 -3.7051
+}
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 7
+    camera fly $::scenarioDir/camera.path
+}
+
+if [preview] {
+    accumZoom 0
+    zoom -4
+    winview 23 -5
+}

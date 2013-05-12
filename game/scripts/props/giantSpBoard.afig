@@ -1,0 +1,33 @@
+new_link
+new_pt 2.495561 1.453498
+new_pt 2.529427 1.209041
+new_pt -0.000764 1.254661
+new_pt 0.052770 1.533650
+link_close
+jt_org 1 0.052770 1.533650
+fix_pt 1 0.178978 1.391520
+mass 1.000000
+link_kp 2000
+link_kd 200
+
+new_link
+new_pt 4.711625 1.414054
+new_pt 4.710066 1.257005
+new_pt 2.110204 1.300257
+new_pt 2.495487 1.436047
+link_close
+jt_org 2 2.495487 1.436047
+mass 1.000000
+link_kp 2000
+link_kd 200
+
+new_link
+new_pt 6.980721 1.361532
+new_pt 6.978607 1.249501
+new_pt 4.588382 1.249501
+new_pt 4.728556 1.361532
+link_close
+jt_org 3 4.728556 1.361532
+mass 1.000000
+link_kp 2000
+link_kd 200

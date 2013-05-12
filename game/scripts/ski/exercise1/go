@@ -1,0 +1,93 @@
+set baseDir ski
+set scenarioDir $baseDir/exercise1
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.txt
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+tog_gnd
+
+loadtexobj props/square_tess.wobj props/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+tog_gnd
+
+#----------------------------------------------------------------------
+
+< $::charDir/common.setup
+
+set ::restLocX -1.465535
+set ::restLocY 0.598467
+
+world setaf skier
+restpose -1.465535 0.598467 1.529096
+
+#----------------------------------------------------------------------
+# setup character
+#----------------------------------------------------------------------
+
+loadchar Skier
+
+world setaf skier
+restpose -1.465535 0.598467 1.529096
+
+#----------------------------------------------------------------------
+# setup sample character
+#----------------------------------------------------------------------
+
+world newaf
+< $baseDir/skier2.setup
+
+world setaf skier2
+restpose 2.465535 0.598467 1.529096
+
+#----------------------------------------------------------------------
+# rock
+#----------------------------------------------------------------------
+
+< props/newBigRock.setup
+set rockName [artfig name]
+set skinName "[artfig name].skin"
+restpose -1.931729 -0.340175 2.172032
+artfig anchored true
+
+# hide texture
+texObj $skinName tex 0
+
+#----------------------------------------------------------------------
+# spring
+#----------------------------------------------------------------------
+
+set spKp 2000
+set spKd 50
+title "$::charName >>  Exercise 1 "
+spring skier 1 -1.747811 0.06718 $rockName 1 -1.747811 0.06718 $spKp $spKd
+spring skier 1 -0.648412 0.084628 $rockName 1 -0.648412 0.084628 $spKp $spKd
+
+#----------------------------------------------------------------------
+
+# play no sound at startup
+proc startSim {} {
+}
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+#----------------------------------------------------------------------
+# setup camera
+#----------------------------------------------------------------------
+
+autopan 0 0
+camera lookat 0.978 -0.436
+
+#----------------------------------------------------------------------
+# setup execise evalation engine
+#----------------------------------------------------------------------
+
+source $scenarioDir/stuntEval.tcl
+

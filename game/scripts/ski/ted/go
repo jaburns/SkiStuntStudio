@@ -1,0 +1,221 @@
+set baseDir ski
+set scenarioDir $baseDir/ted
+set ::scenarioDir $scenarioDir
+set ::editable 1
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+# loadtexobj $scenarioDir/gnd_tess.wobj $scenarioDir/gnd.jpg
+# loadtexobjtxfm $scenarioDir/gnd.txfm
+
+gndfile $scenarioDir/jump_downhill.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 60
+# gnd togslices
+
+gndfile $scenarioDir/gnd_takeoff.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 30
+# gnd togslices
+
+gndfile $scenarioDir/gnd_takeoff2.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 30
+# gnd togslices
+
+gndfile $scenarioDir/gnd_slope.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 5
+# gnd togslices
+
+gndfile $scenarioDir/gnd_slope2.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 5
+# gnd togslices
+
+
+
+< $::charDir/common.setup
+tog_gnd on
+gnd_solidShade on
+
+# set ::restLocX -1.5 
+set ::restLocX 0 
+set ::restLocY 0.9
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+# locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName  >>  Terrain edit"
+
+#----------------------------------------------------------------------
+# crates
+#----------------------------------------------------------------------
+
+sound load thudBox ../sound/thudBox.wav
+
+< props/newCrate.setup
+artfig setname crate1
+restpose 12 0
+artfig sleep
+
+< props/newCrate.setup
+artfig setname crate2
+restpose 14 0
+artfig sleep
+
+#-----------------------------------------------------------------------
+# trees
+#-----------------------------------------------------------------------
+
+< props/newTree.setup
+artfig setname tree7
+restpose 16 0
+
+< props/newTree.setup
+artfig setname tree6
+restpose 18 0
+
+#----------------------------------------------------------------------
+# catapult
+#----------------------------------------------------------------------
+
+< props/newGiantSpBoard.setup
+artfig setname catapult
+restpose 18 -2 -26.524300
+artfig sleep
+
+#----------------------------------------------------------------------
+# rocks
+#----------------------------------------------------------------------
+
+< props/newBigRock.setup
+artfig setname bigRock1
+restpose 6 2 0
+artfig sleep
+
+< props/newBigRock.setup
+artfig setname bigRock2
+restpose 7 2 0
+artfig sleep
+
+< props/newBigRock.setup
+artfig setname bigRock3
+restpose 8 2 0
+artfig sleep
+
+#----------------------------------------------------------------------
+# wall
+#----------------------------------------------------------------------
+
+world newaf
+< $::scenarioDir/wall.afig
+artfig setname wall
+restpose 0 4
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ravine_corner1
+artfig anchored true
+usemonitor forceTrigger 0 -1 2000 1 breakCorner "reset 1" "trig 1"
+artfig type GndLike
+tog_link
+tog_fill
+
+#----------------------------------------------------------------------
+# flat
+#----------------------------------------------------------------------
+
+world newaf
+< $::scenarioDir/flat.afig
+artfig setname flat
+restpose 6 4 0
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ravine_corner1
+artfig anchored true
+usemonitor forceTrigger 0 -1 200000 1 breakCorner "reset 1" "trig 1"
+artfig type GndLike
+tog_link
+tog_fill
+
+#----------------------------------------------------------------------
+# ramp
+#----------------------------------------------------------------------
+
+#world newaf
+#< $::scenarioDir/jump_takeoff.afig
+#artfig setname ramp
+#restpose 19 -10 0
+#jt_pd 1 0 0.00 -10 10 -1 1 
+#dgen dyn_ravine_corner1
+#artfig anchored true
+#usemonitor forceTrigger 0 -1 2000 1 breakCorner "reset 1" "trig 1"
+#artfig type GndLike
+#tog_link
+#tog_fill
+
+#----------------------------------------------------------
+
+proc resetActiveObj {} {
+    world setaf crate1
+    artfig restpose
+    artfig sleep
+
+    world setaf crate2
+    artfig restpose
+    artfig sleep
+
+    world setaf catapult
+    artfig restpose
+    artfig sleep
+
+    world setaf bigRock1
+    artfig restpose
+    artfig sleep
+
+    world setaf bigRock2
+    artfig restpose
+    artfig sleep
+
+    world setaf bigRock3
+    artfig restpose
+    artfig sleep
+}
+
+#----------------------------------------------------------------------
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 7
+    camera fly $::scenarioDir/camera.path
+}
+
+#------------------------------
+# guiBeginScenario - 
+#   function that's called at the beginning of a scenario
+#   This defn overrides empty default defn in stuntEval.tcl
+#------------------------------
+
+proc guiBeginScenario {} {
+    guiMode terrain_edit
+}
+
+zoom -2
+
+if [preview] {
+    accumZoom 0
+    zoom -7
+    winview 20 -7
+}

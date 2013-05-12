@@ -1,0 +1,23 @@
+# clear messages
+mlmessage ""
+
+# play sound at the beginning of simulation
+proc startSim {} {
+    sound play wind -vol 0.2 -loop
+#    sound play music -loop
+}
+
+# initialize stunt event controller
+set ::seEvalPeriod 0.1
+world seCtrl seEval $::seEvalPeriod
+source $skiDir/stuntEval.tcl
+
+# initialize stunt event generators
+world setaf skier
+usemonitor timeGen
+usemonitor stateGen 1 1.022 0.189
+usemonitor contactGen b sl
+
+# initialize the accummulated zoom
+accumZoom 0
+

@@ -1,0 +1,170 @@
+#----------------------------------------------------------------------
+# common.keys
+# - key callback functions common to all characters
+#----------------------------------------------------------------------
+
+set erase 1
+
+# default rest location
+set ::restLocX -1.5 
+set ::restLocY 0.7
+
+set ::stopDemo 0
+
+#------------------------------
+# keyr - replay most recent stunt
+#------------------------------
+
+proc keyr {} {
+  gui delall
+  simulate stop
+  play logbuf
+}
+
+#------------------------------
+# keySpace - restart simulation
+#------------------------------
+
+proc keySpace {} {
+  if [preview] { return }
+
+  gui delall
+
+  global restLocX
+  global restLocY
+
+  # reposition active objects
+  if {[info procs resetActiveObj] == "resetActiveObj"} {
+    resetActiveObj
+  }
+
+  # reset stunt evaluator
+  if {[info procs seInit] == "seInit"} {
+    seInit
+  }
+
+  simulate stop
+  logging off
+  if [file exists log.ani] {
+    file rename -force log.ani log_old.ani
+  }
+  logging on
+  simulate log "loadscenario $::stageName"
+  simulate log "loadchar $::charName"
+
+  world setaf skier
+#  simulate log_rtratio
+  set erase 2
+  redisplay
+  restpose $restLocX $restLocY
+
+  # reposition active objects
+  if {[info procs startSim] == "startSim"} {
+    startSim
+  }
+
+  set ::sim_rec 1
+  simulate start
+}
+
+#------------------------------
+# keyp - playback from log buffer
+#------------------------------
+
+proc keyp {} {
+  simulate stop
+  logging off
+  goPlayback
+}
+
+
+#------------------------------
+# keyd - demo all animation files for 
+#        this scenario
+#------------------------------
+
+proc keyd {} {
+    global stopDemo
+    global scenarioDir
+
+    gui delall
+    set stopDemo 0
+    if [file exists $scenarioDir/anim] {
+	foreach f [glob $scenarioDir/anim/*.az] {
+	    buf_cload "$f"
+	    play logbuf
+	    if $stopDemo { break }
+	}
+    }
+    set stopDemo 0
+}
+
+# show physics mode?
+set ::showPhysics 0
+
+#------------------------------
+# key* - toggle physics mode
+#------------------------------
+
+proc key* {} {
+    global showPhysics
+
+    tog_texobj
+    tog_gnd
+    world setaf skier
+    tog_link
+    world setaf drski
+    tog_link
+    world setaf dlski
+    tog_link
+
+    if $showPhysics {
+	set showPhysics 0
+	world showCOG false
+	world traceCOG false
+	world gndFScale 0
+    } else {
+	set showPhysics 1
+	world showCOG true
+	world traceCOG true
+	world gndFScale 0.1
+    }
+}
+
+# default display time step
+set dt_disp 0.02
+
+#------------------------------
+# keyEsc - display the scenario-end menu if we are not in preview mode
+#------------------------------
+
+proc keyEsc {} {
+    if [preview] { return }
+    < scenarioEnd.tcl
+}
+
+#------------------------------
+# keye - start terrain editor
+#------------------------------
+
+proc keye {} {
+    message ""
+    resetActiveObj
+    world setaf skier
+    set erase 2
+    redisplay
+    global restLocX 
+    global restLocY
+    restpose $restLocX $restLocY
+    simulate reset
+    showGoal
+    guiMode terrain_edit
+}
+
+#------------------------------
+# keys - save current run
+#------------------------------
+
+proc keys {} {
+  saveAnimBegin
+}

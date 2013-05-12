@@ -1,0 +1,404 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/extremeSkill1
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+loadtexobj $scenarioDir/hak2.wobj $scenarioDir/snow2.jpg
+loadtexobjtxfm $scenarioDir/hak.txfm
+
+gndfile $scenarioDir/jump_downhill.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 60
+
+
+#----------------------------------------------------------------------
+# background setup
+#----------------------------------------------------------------------
+
+set ::treeIndex 1
+set ::treeName ""
+
+proc newTree {} {
+    set ::treeName "t$::treeIndex"
+    set ::treeIndex [expr $::treeIndex + 1]
+}
+
+# --- group 1
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -60
+
+# --- group 2
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -60
+
+# --- group 3
+
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark03.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+newTree
+loadtexobj props/treeBg_tess.wobj props/treeDark07.jpg
+loadtexobjtxfm $scenarioDir/$::treeName.txfm
+settexobjname $::treeName
+texObj $::treeName dispOrder -80
+
+
+#
+# -- char setup
+#
+
+
+< $::charDir/common.setup
+world setaf skier
+artfig setmonitor Ski2Monitor
+monitor eval maxHzImpact 12000000
+monitor eval maxDnImpact 12000000
+
+
+tog_gnd on
+gnd_solidShade on
+
+# set ::restLocX -1.5 
+set ::restLocX 0 
+set ::restLocY 0.9
+
+
+
+texload brick ../artwork/background.jpg repeat
+
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+title "$::charName  >>  Terrain edit"
+
+#----------------------------------------------------------------------
+# crates
+#----------------------------------------------------------------------
+
+#sound load thudBox ../sound/thudBox.wav
+
+#< props/newCrate.setup
+#artfig setname crate1
+#restpose 12 0
+#artfig sleep
+
+#< props/newCrate.setup
+#artfig setname crate2
+#restpose 14 0
+#artfig sleep
+
+#-----------------------------------------------------------------------
+# trees
+#-----------------------------------------------------------------------
+
+< props/newTree.setup
+artfig setname tree7
+restpose 124.8 -64.6
+
+< props/newTree.setup
+artfig setname tree6
+restpose 125.3 -65.1
+
+< props/newTree.setup
+artfig setname tree3
+restpose 167 -62
+
+< props/newTree.setup
+artfig setname tree3
+restpose 168.5 -62
+
+
+#----------------------------------------------------------------------
+# catapult
+#----------------------------------------------------------------------
+
+#< props/newGiantSpBoard.setup
+#artfig setname catapult
+#restpose 18 -2 -26.524300
+#artfig sleep
+
+#----------------------------------------------------------------------
+# rocks
+#----------------------------------------------------------------------
+
+#< props/newBigRock.setup
+#artfig setname bigRock1
+#restpose 6 2 0
+#artfig sleep
+
+#< props/newBigRock.setup
+#artfig setname bigRock2
+#restpose 7 2 0
+#artfig sleep
+
+#< props/newBigRock.setup
+#artfig setname bigRock3
+#restpose 8 2 0
+#artfig sleep
+
+#----------------------------------------------------------------------
+# wall
+#----------------------------------------------------------------------
+
+#world newaf
+#< $::scenarioDir/wall.afig
+#artfig setname wall
+#restpose 0 4
+#jt_pd 1 0 0.00 -10 10 -1 1
+#dgen dyn_ravine_corner1
+#artfig anchored true
+#usemonitor forceTrigger 0 -1 2000 1 breakCorner "reset 1" "trig 1"
+#artfig type GndLike
+#tog_link
+#tog_fill
+
+#----------------------------------------------------------------------
+# flat
+#----------------------------------------------------------------------
+
+#world newaf
+#< $::scenarioDir/flat.afig
+#artfig setname flat
+#restpose 6 4 0
+#jt_pd 1 0 0.00 -10 10 -1 1 
+#dgen dyn_ravine_corner1
+#artfig anchored true
+#usemonitor forceTrigger 0 -1 200000 1 breakCorner "reset 1" "trig 1"
+#artfig type GndLike
+#tog_link
+#tog_fill
+
+#----------------------------------------------------------------------
+# ramp
+#----------------------------------------------------------------------
+
+#world newaf
+#< $::scenarioDir/jump_takeoff.afig
+#artfig setname ramp
+#restpose 19 -10 0
+#jt_pd 1 0 0.00 -10 10 -1 1 
+#dgen dyn_ravine_corner1
+#artfig anchored true
+#usemonitor forceTrigger 0 -1 2000 1 breakCorner "reset 1" "trig 1"
+#artfig type GndLike
+#tog_link
+#tog_fill
+
+
+proc resetShell {} {
+    world setaf explosionTrigger1
+    restpose 21.55 -18.95 102.641701
+    artfig sleep
+    artfig active false
+
+    world setextf explosion1
+    extf eval moveTo explosionTrigger1 1
+    extf active false
+    extf eval rigged true
+    
+    world setaf explosionTrigger2
+    artfig restpose
+    artfig sleep
+    artfig active false
+
+    world setextf explosion2
+    extf eval moveTo explosionTrigger2 1
+    extf active false
+    extf eval rigged true
+}
+
+#----------------------------------------------------------
+
+proc resetActiveObj {} {
+		
+		resetShell
+		
+}
+
+#----------------------------------------------------------------------
+
+
+#----------------------------------------------------------------------
+# shell                                                                
+#----------------------------------------------------------------------
+                                                                       
+explosion -2.283 -0.76 10 100000000 5 1.5 0.5                               
+extf name explosion1                                                   
+extf show true                                                                                      
+
+#< props/newShell.setup                                                                                               
+< props/newBigRock.setup 
+set origName [artfig name]                                             
+artfig setname explosionTrigger1                                        
+texObj $origName.skin rename explosion1.skin                           
+                                                                       
+usemonitor forceTrigger 0 -1 1 1 explode1 "reset" "trig"             
+usemonitor forceTrigger 0 1 1 1 explode1 "reset" "trig"              
+extf eval moveTo explosionTrigger1 1                                    
+
+set ::shellExploded1 0                                                  
+                                                                       
+proc explode1 {argv} {                                                  
+	if {$argv == "trig"} {
+		world setaf explosionTrigger1
+		restpose 21.0 -18.95 0
+		world setextf explosion1                                             
+		if [extf eval rigged] {                                              
+			set ::shellExploded1 1                                            
+			extf eval moveTo explosionTrigger1 1                              
+			extf active true                                                 
+			texObj explosion1.skin tex 0                                     
+			sound play explosn                                               
+			world setaf explosionTrigger1
+			artfig active false                                              
+		}                                                                    
+    } elseif {$argv == "reset" } {                                     
+		set ::shellExploded1 0                                                
+		world setaf explosionTrigger1                                         
+		artfig active true                                                   
+		artfig sleep                                                         
+		world setextf explosion1                                             
+		extf active false                                                    
+		texObj explosion1.skin tex 1                                   
+    }                                                                  
+}                                                                      
+                                                                       
+#----------------------------------------------------------------------
+
+
+explosion -2.283 -0.76 10 100000 5 1.5 0.5                               
+extf name explosion2                                                   
+extf show true                                                   
+
+< props/newShell.setup                                                                                             
+set origName [artfig name]                                             
+artfig setname explosionTrigger2                                        
+texObj $origName.skin rename explosion2.skin                           
+restpose 25 -12.95 102.641701    
+
+usemonitor forceTrigger 0 -1 1 1 explode2 "reset" "trig"             
+usemonitor forceTrigger 0 1 1 1 explode2 "reset" "trig"              
+extf eval moveTo explosionTrigger2 1       
+
+set ::shellExploded2 0 
+
+proc explode2 {argv} {                                                  
+		if {$argv == "trig"} {                                             
+				world setextf explosion2                                             
+				if [extf eval rigged] {                                              
+				    set ::shellExploded2 1                                            
+				    extf eval moveTo explosionTrigger2 1                              
+				    extf active true                                                 
+				    texObj explosion2.skin tex 0                                     
+				    sound play explosn                                               
+				    world setaf explosionTrigger2
+				    artfig active false                                              
+				}                                                                    
+    } elseif {$argv == "reset" } {                                     
+				set ::shellExploded2 0                                                
+				world setaf explosionTrigger2                                         
+				artfig active true                                                   
+				artfig sleep                                                         
+				world setextf explosion2                                             
+				extf active false                                                    
+	      texObj explosion2.skin tex 1                                   
+    }                                                                  
+}
+
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+#----------------------------------------------------------------------
+
+#------------------------------
+# guiBeginScenario - 
+#   function that's called at the beginning of a scenario
+#   This defn overrides empty default defn in stuntEval.tcl
+#------------------------------
+
+#proc guiBeginScenario {} {
+#    guiMode terrain_edit
+#}
+
+zoom -2
+
+if [preview] {
+    accumZoom 0
+    zoom -7
+    winview 20 -7
+}
+
+winview 20 -7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

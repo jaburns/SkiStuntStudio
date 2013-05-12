@@ -1,0 +1,150 @@
+# directory info
+set baseDir props
+set propsDir $baseDir
+
+# object base name + counter
+set counterName signCount
+set objNameBase sign
+
+# increment counter
+if [info exists $counterName] {
+    set $counterName [expr $$counterName + 1]
+} else {
+    set $counterName 1
+}
+set objName "$objNameBase[expr $$counterName]"
+
+#----------------------------------------------------------------------
+
+# list which associates names of signs with the location of the signs
+if ![info exists signList] {
+    set ::signList {}
+}
+
+set ::signMidX 3.131062 
+set ::signMidY 1.334077
+set ::midExt   "_mid"
+set ::frgndExt "_fg"
+set ::bkgndExt "_bg"
+set ::propsDir $propsDir
+
+proc addSign { name x y } {
+    global ::signList
+
+    if {$name == ""} {
+	set name $objName
+    }
+
+    lappend signList [list $name $x $y]
+}
+
+proc findSign { name } {
+    global ::signList
+
+    foreach entry $signList {
+	set n [lindex $entry 0]
+	if {$n == $name} {
+	    return $entry
+	}
+    }
+}
+
+proc getName { entry } {
+    return [lindex $entry 0]
+}
+
+proc getX { entry } {
+    return [lindex $entry 1]
+}
+
+proc getY { entry } {
+    return [lindex $entry 2]
+}
+
+# create new sign and record the location of the sign
+proc makeNewSign {name x y} {
+    global ::signMidX
+    global ::signMidY
+    global ::bkgndExt
+    global ::frgndExt
+    global ::midExt
+    global ::propsDir
+
+    # compute offset for foreground and background pieces
+    set dx [expr $x - $signMidX]
+    set dy [expr $y - $signMidY]
+
+    # load background section
+    loadtexobj $::propsDir/sign_bkgnd_tess.wobj props/sign.jpg
+    loadtexobjtxfm $::propsDir/sign_tess.txfm
+    settexobjname $name$bkgndExt
+    texObj $name$bkgndExt trans $dx $dy
+    texObj $name$frgndExt dispOrder -50
+
+    puts "hello\n"
+
+    # load middle section
+    world newaf
+    < $::propsDir/sign_middle.afig
+    loadskin $::propsDir/sign_middle.skin $::propsDir/sign_middle_tess.wobj $::propsDir/sign.jpg
+    jt_pd 1 0 0.00 -10 10 -1 1 
+    dgen dyn_signMid
+    usemonitor snowEffects
+    artfig setname $name$midExt
+    artfig anchored true
+    usemonitor forceTrigger 1 0 100 1 breakSign "reset $name" "trig $name" -oneTime
+    tog_link
+    addSign $name $x $y
+    restpose $x $y
+
+    # load foreground section
+    loadtexobj $::propsDir/sign_frgnd_tess.wobj $::propsDir/sign.jpg
+    loadtexobjtxfm $::propsDir/sign_tess.txfm
+    settexobjname $name$frgndExt
+    texObj $name$frgndExt trans $dx $dy
+    texObj $name$frgndExt dispOrder 100
+}
+
+# reset the middle section of sign
+proc resetSign { name } {
+    global ::midExt
+
+    set entry [findSign $name]
+
+    if {$entry != {}} {
+	set x [getX $entry]
+	set y [getY $entry]
+	world setaf $name$midExt
+	restpose $x $y
+    }
+}
+
+sound load signCrack $::soundDir/signCrack.wav
+
+proc breakSign { arg } {
+    global ::midExt
+
+    set argv [split $arg " "]
+    set cmd [lindex $argv 0]
+    set name [lindex $argv 1]
+    
+    if {$cmd == "reset"} {
+	world setaf $name$midExt
+	artfig anchored true
+    } elseif {$cmd == "trig"} {
+	world setaf $name$midExt
+	artfig anchored false
+	sound play signCrack
+    }
+}
+
+proc resetActiveObj {} {
+    global ::signList
+
+    # go through all sign objects
+
+    foreach entry $signList {
+	set name [getName $entry]
+	resetSign $name
+    }
+}

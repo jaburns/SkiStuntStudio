@@ -1,0 +1,31 @@
+proc keyr {} {
+  simulate stop
+  set erase 2
+  redisplay
+
+  world setaf rock1
+  restpose 1.5 1.5
+
+  world setaf rock2
+  restpose 1.7 3 10
+
+  simulate start
+}
+
+set showPhysics 0
+
+proc key* {} {
+    global showPhysics
+
+    if $showPhysics {
+	set showPhysics 0
+#	world showCOG false
+#	world traceCOG false
+	world gndFScale 0
+    } else {
+	set showPhysics 1
+#	world showCOG true
+#	world traceCOG true
+	world gndFScale 0.1
+    }
+}

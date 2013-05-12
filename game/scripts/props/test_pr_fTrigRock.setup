@@ -1,0 +1,21 @@
+< props/newRock.setup
+artfig setname rock1
+artfig anchored true
+restpose 2.3 0.26
+usemonitor forceTrigger 0 -1 1500 1 rockCb reset trig
+
+proc rockCb { arg } {
+  if {$arg == "reset"} {
+    world setaf rock1
+    artfig anchored true
+  } elseif {$arg == "trig"} {
+    world setaf rock1
+    artfig anchored false
+  }
+}
+
+proc resetActiveObj {} {
+  world setaf rock1
+  restpose 2.3 0.26
+  artfig anchored true
+}

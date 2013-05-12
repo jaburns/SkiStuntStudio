@@ -1,0 +1,84 @@
+set baseDir ski
+set scenarioDir $baseDir/lesson4
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.txt
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+tog_gnd
+
+loadtexobj props/square_tess.wobj props/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+tog_gnd
+
+#----------------------------------------------------------------------
+
+< $::charDir/common.setup
+
+set ::restLocX -1.465535
+set ::restLocY 0.598467
+title "$::charName >> Lesson 4"
+
+world setaf skier
+restpose -1.465535 0.598467 1.529096
+
+#----------------------------------------------------------------------
+# rock
+#----------------------------------------------------------------------
+
+< props/newBigRock.setup
+set rockName [artfig name]
+set skinName "[artfig name].skin"
+restpose -1.931729 -0.340175 2.172032
+artfig anchored true
+
+# hide texture
+texObj $skinName tex 0
+
+#----------------------------------------------------------------------
+
+# play no sound at startup
+proc startSim {} {
+}
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+#----------------------------------------------------------------------
+
+set ::skierState $::onGround
+
+#----------------------------------------------------------------------
+
+source anim.tcl
+
+proc anim_begin {} {
+    _anim_begin
+
+    gui delall
+#    play $::scenarioDir/lesson.ani
+    buf_cload $::scenarioDir/lesson.az
+    play logbuf
+}
+
+proc anim_end {} {
+    _anim_end
+
+    # check to see if we watched the entire animation
+    if {[pb time] > 30} {
+	set ::skierState $::nextStage
+    }
+}
+
+# override the goal showing step
+proc showGoal {} {
+    if {[preview] == 0} {
+	message "Lesson 4: Back Flip\\n\\n Learn the basics of\\n performing back flips.\\n\\nPress <space> to continue\\nPress <Esc> to stop lesson at\\n any time" 15 18
+    }
+}

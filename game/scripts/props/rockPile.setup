@@ -1,0 +1,98 @@
+set baseDir rock
+set scenarioDir $baseDir
+
+set rockIndex 1
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname "rock$rockIndex"
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose -0.482480 -0.795688 0.000000
+artfig sleep
+set rockIndex [expr $rockIndex + 1]
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname "rock$rockIndex"
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose -0.168366 -1.738029 38.819702
+artfig sleep
+set rockIndex [expr $rockIndex + 1]
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname "rock$rockIndex"
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 0.442410 -2.994485 -43.897087
+artfig sleep
+set rockIndex [expr $rockIndex + 1]
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname "rock$rockIndex"
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 1.157892 -4.495251 30.118092
+artfig sleep
+set rockIndex [expr $rockIndex + 1]
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname "rock$rockIndex"
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 10.771654 -7.241465 -38.797585
+artfig sleep
+set rockIndex [expr $rockIndex + 1]
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname "rock$rockIndex"
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 11.229378 -7.506201 15.198595
+artfig sleep
+set rockIndex [expr $rockIndex + 1]
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname "rock$rockIndex"
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 10.864240 -7.739134 -13.793909
+artfig sleep
+set rockIndex [expr $rockIndex + 1]
+
+proc repile {} {
+  world setaf rock1
+  restpose -0.482480 -0.795688 0.000000
+  artfig sleep
+  world setaf rock2
+  restpose -0.168366 -1.738029 38.819702
+  artfig sleep
+  world setaf rock3
+  restpose 0.442410 -2.994485 -43.897087
+  artfig sleep
+  world setaf rock4
+  restpose 1.157892 -4.495251 30.118092
+  artfig sleep
+  world setaf rock5
+  restpose 10.771654 -7.241465 -38.797585
+  artfig sleep
+  world setaf rock6
+  restpose 11.229378 -7.506201 15.198595
+  artfig sleep
+  world setaf rock7
+  restpose 10.864240 -7.739134 -13.793909
+  artfig sleep
+}

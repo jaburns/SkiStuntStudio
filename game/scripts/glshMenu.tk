@@ -1,0 +1,458 @@
+#----------------------------------------------------------------------
+# glshMenu.tk - Tk menu for GLSH
+#
+# precondition: start.tcl is loaded
+#----------------------------------------------------------------------
+
+# setup window
+wm title "." "Motion Playground"
+
+#----------------------------------------------------------------------
+# ski menu
+#----------------------------------------------------------------------
+
+set skiButtonMenu [menubutton .mski -text "skier" \
+ 	-menu .mski.mnu -relief raised -borderwidth 3]
+set skiMenu [menu $skiButtonMenu.mnu]
+pack $skiButtonMenu -side left
+
+$skiMenu add command -label "practice" -command "ski practice"
+$skiMenu add command -label "practice + tree" -command "ski practiceTree"
+$skiMenu add separator
+$skiMenu add command -label "jump (single + ff)" -command "ski jump; source ski/jump/stuntEval_1.tcl; showGoal"
+$skiMenu add command -label "jump (single + bf)" -command "ski jump; source ski/jump/stuntEval_2.tcl; showGoal"
+$skiMenu add command -label "jump (single + df)" -command "ski jump; source ski/jump/stuntEval_3.tcl; showGoal"
+$skiMenu add command -label "jump (single + db)" -command "ski jump; source ski/jump/stuntEval_4.tcl; showGoal"
+$skiMenu add command -label "jump (triple)" -command "ski jump3"
+$skiMenu add separator
+$skiMenu add command -label "camel" -command "ski camel"
+$skiMenu add command -label "terrain editor" -command "ski ted"
+$skiMenu add command -label "camel + crates" -command "ski camelCrates"
+$skiMenu add command -label "camel + signs" -command "ski camelSign"
+$skiMenu add command -label "camel + catapult" -command "ski camelCatapult"
+$skiMenu add command -label "camel + trees" -command "ski camelTrees"
+$skiMenu add command -label "camel + snowman" -command "ski camelSnowman"
+$skiMenu add command -label "camel + gravity" -command "ski camelGravity"
+$skiMenu add separator
+$skiMenu add command -label "hut" -command "ski hut"
+$skiMenu add command -label "hut + rocks" -command "ski hutRock"
+$skiMenu add command -label "hut + explosion" -command "ski hutExplosion"
+$skiMenu add separator
+$skiMenu add command -label "road" -command "ski road"
+$skiMenu add command -label "road + snowball" -command "ski roadSnowball"
+$skiMenu add command -label "road + dirt" -command "ski roadDirt"
+$skiMenu add separator
+$skiMenu add command -label "ravine" -command "ski ravine"
+$skiMenu add command -label "ravine + jet" -command "ski ravineJet"
+$skiMenu add separator
+$skiMenu add command -label "gap" -command "ski gap"
+$skiMenu add command -label "gap + crumble bridge" -command "ski gapCrumble"
+$skiMenu add command -label "gap + crumble bridge + shell (crash)" -command "ski gapCrumbleShell; source ski/gapCrumbleShell/stuntEval_1.tcl; showGoal"
+$skiMenu add command -label "gap + crumble bridge + shell (cross)" -command "ski gapCrumbleShell; source ski/gapCrumbleShell/stuntEval_2.tcl; showGoal"
+$skiMenu add separator
+$skiMenu add command -label "death valley" -command "ski deathValley"
+
+#------------------------------
+# ski - start scenarios with the skier as the character
+#   args = scenario name (e.g. camel)
+#------------------------------
+
+proc ski {args} {
+    set ::charDir  ski
+    set ::charName skier
+    set ::charSetup skier.setup
+    startNewStage  "ski/$args/setup"
+}
+
+#----------------------------------------------------------------------
+# santa menu
+#----------------------------------------------------------------------
+
+set santaButtonMenu [menubutton .msanta -text "santa" \
+ 	-menu .msanta.mnu -relief raised -borderwidth 3]
+set santaMenu [menu $santaButtonMenu.mnu]
+pack $santaButtonMenu -side left
+
+$santaMenu add command -label "practice" -command "santa practice"
+$santaMenu add command -label "practice + tree" -command "santa practiceTree"
+$santaMenu add separator
+$santaMenu add command -label "jump (single + ff)" -command "santa jump; source ski/jump/stuntEval_1.tcl; showGoal"
+$santaMenu add command -label "jump (single + bf)" -command "santa jump; source ski/jump/stuntEval_2.tcl; showGoal"
+$santaMenu add command -label "jump (single + df)" -command "santa jump; source ski/jump/stuntEval_3.tcl; showGoal"
+$santaMenu add command -label "jump (single + db)" -command "santa jump; source ski/jump/stuntEval_4.tcl; showGoal"
+$santaMenu add command -label "jump (triple)" -command "santa jump3"
+$santaMenu add separator
+$santaMenu add command -label "camel" -command "santa camel"
+$santaMenu add command -label "camel + crates" -command "santa camelCrates"
+$santaMenu add command -label "camel + signs" -command "santa camelSign"
+$santaMenu add command -label "camel + catapult" -command "santa camelCatapult"
+$santaMenu add command -label "camel + trees" -command "santa camelTrees"
+$santaMenu add command -label "camel + snowman" -command "santa camelSnowman"
+$santaMenu add command -label "camel + gravity" -command "santa camelGravity"
+$santaMenu add separator
+$santaMenu add command -label "hut" -command "santa hut"
+$santaMenu add command -label "hut + rocks" -command "santa hutRock"
+$santaMenu add command -label "hut + explosion" -command "santa hutExplosion"
+$santaMenu add separator
+$santaMenu add command -label "road" -command "santa road"
+$santaMenu add command -label "road + snowball" -command "santa roadSnowball"
+$santaMenu add command -label "road + dirt" -command "santa roadDirt"
+$santaMenu add separator
+$santaMenu add command -label "ravine" -command "santa ravine"
+$santaMenu add command -label "ravine + jet" -command "santa ravineJet"
+$santaMenu add separator
+$santaMenu add command -label "gap" -command "santa gap"
+$santaMenu add command -label "gap + crumble bridge" -command "santa gapCrumble"
+$santaMenu add command -label "gap + crumble bridge + shell (crash)" -command "santa gapCrumbleShell; source ski/gapCrumbleShell/stuntEval_1.tcl; showGoal"
+$santaMenu add command -label "gap + crumble bridge + shell (cross)" -command "santa gapCrumbleShell; source ski/gapCrumbleShell/stuntEval_2.tcl; showGoal"
+$santaMenu add separator
+$santaMenu add command -label "death valley" -command "santa deathValley"
+
+#------------------------------
+# santa - start scenario with santa as the character
+#   args = scenario name (e.g. camel)
+#------------------------------
+
+proc santa {args} {
+    set ::charDir  ski
+    set ::charName santa
+    set ::charSetup santa.setup
+    startNewStage "ski/$args/setup"
+}
+
+#----------------------------------------------------------------------
+# diver menu
+#----------------------------------------------------------------------
+
+set diverButtonMenu [menubutton .mdiver -text "diver" \
+ 	-menu .mdiver.mnu -relief raised -borderwidth 3]
+set diverMenu [menu $diverButtonMenu.mnu]
+pack $diverButtonMenu -side left
+
+$diverMenu add command -label "practice" -command "diver practice"
+$diverMenu add command -label "platform" -command "diver platform"
+
+#------------------------------
+# diver - start diver scenario
+#   args = scenario name
+#------------------------------
+
+proc diver {args} {
+  simulate stop
+  world clear
+  < "diver/$args/setup"
+  loaddemo
+  hotzone 0.005 0.48 0.0065 0.64
+}
+
+#----------------------------------------------------------------------
+# bunny menu
+#----------------------------------------------------------------------
+
+set bunnyButtonMenu [menubutton .mbunny -text "bunny" \
+ 	-menu .mbunny.mnu -relief raised -borderwidth 3]
+set bunnyMenu [menu $bunnyButtonMenu.mnu]
+pack $bunnyButtonMenu -side left
+
+$bunnyMenu add command -label "practice" -command "bunny practice"
+$bunnyMenu add command -label "forest" -command "bunny forest"
+
+#------------------------------
+# bunny - start bunny scenario
+#   args = scenario name
+#------------------------------
+
+proc bunny {args} {
+  simulate stop
+  world clear
+  < "bunny/$args/setup"
+  loaddemo
+  hotzone 0.068 0.55 0.065 0.71
+}
+
+#----------------------------------------------------------------------
+# dolphin menu
+#----------------------------------------------------------------------
+
+set dolphinButtonMenu [menubutton .mdolphin -text "dolphin" \
+ 	-menu .mdolphin.mnu -relief raised -borderwidth 3]
+set dolphinMenu [menu $dolphinButtonMenu.mnu]
+pack $dolphinButtonMenu -side left
+
+$dolphinMenu add command -label "seaweed" -command "dolphin seaweed"
+$dolphinMenu add command -label "rocky" -command "dolphin rocky"
+$dolphinMenu add command -label "pools" -command "dolphin pools"
+
+#------------------------------
+# dolphin - start dolphin scenario
+#   args = scenario name
+#------------------------------
+
+proc dolphin {args} {
+  simulate stop
+  world clear
+  < "dolphin/$args/setup"
+  loaddemo
+  hotzone 0.005 0.48 0.0065 0.64
+}
+
+#----------------------------------------------------------------------
+# swing menu
+#----------------------------------------------------------------------
+
+set swingButtonMenu [menubutton .mswing -text "swing" \
+ 	-menu .mswing.mnu -relief raised -borderwidth 3]
+set swingMenu [menu $swingButtonMenu.mnu]
+pack $swingButtonMenu -side left
+
+$swingMenu add command -label "demo" -command "swing demo"
+
+
+#------------------------------
+# swing - start swing scenario
+#   args = scenario name
+#------------------------------
+
+proc swing {args} {
+  simulate stop
+  world clear
+  < swing/swing.setup  
+  loaddemo
+  hotzone 0.005 0.48 0.0065 0.64
+}
+
+
+#----------------------------------------------------------------------
+# demo menu
+#----------------------------------------------------------------------
+
+set demoButtonMenu [menubutton .mdemo -text "demo" \
+ 	-menu .mdemo.mnu -relief raised -borderwidth 3]
+set demoMenu [menu $demoButtonMenu.mnu]
+place $demoButtonMenu -x 500
+
+#------------------------------
+# loaddemo - find all animations for a given
+#            scenario and make the available in
+#            a pull-down menu
+#------------------------------
+
+proc loaddemo {} {
+    global scenarioDir
+    global demoMenu
+
+    # clear menu items
+    $demoMenu delete 0 end
+
+    # add menu items
+    if [file exists $scenarioDir/anim] {
+#	foreach f [glob $scenarioDir/anim/*.ani] {
+#      	    $demoMenu add command -label $f -command "demo $f"
+#	}
+
+	set fail [catch {
+	    foreach f [glob $scenarioDir/anim/*.az] {
+		$demoMenu add command -label $f -command "demo $f"
+	    }
+	}]
+    }
+}
+
+#------------------------------
+# anitoaz - convert .ani files (uncompressed animation) to
+#           .az (binary and compressed) files
+#         - convert all the files in $scenarioDir/anim
+#------------------------------
+
+proc anitoaz {} {
+    global scenarioDir
+    global demoMenu
+    if [file exists $scenarioDir/anim] {
+        cd $scenarioDir/anim
+	foreach f [glob *.ani] {
+            regsub ".ani" $f ".az" cf
+            puts $cf
+            buf_tload $f
+            buf_csave $cf
+	}
+        cd ../../..
+    }
+}
+
+#------------------------------
+# demo - playback a .az file
+#   args = name of the .az file
+#------------------------------
+
+proc demo {args} {
+    buf_cload $args
+    keyb
+}
+
+# deprecated version, used for playing back .ani files 
+#
+# proc demo {args} {
+#     play $args
+# }
+
+#----------------------------------------------------------------------
+# quit
+#----------------------------------------------------------------------
+
+set quitButton [button .quit -text "quit" -command "exit"]
+pack $quitButton -side right
+
+#----------------------------------------------------------------------
+# console
+#----------------------------------------------------------------------
+
+set consoleButton [button .console -text "console" -command "togConsole"]
+pack $consoleButton -side right
+
+#------------------------------
+# togConsole - toggle the display of the Tcl console
+#------------------------------
+
+set showConsole 0
+proc togConsole {} {
+    global showConsole
+
+    if $showConsole {
+	set showConsole 0
+	console hide
+    } else {
+	set showConsole 1
+	console show
+    }
+}
+
+#----------------------------------------------------------------------
+# sim speed
+#----------------------------------------------------------------------
+
+set simButtonMenu [menubutton .msim -text "sim" \
+ 	-menu .msim.mnu -relief raised -borderwidth 3]
+set simMenu [menu $simButtonMenu.mnu]
+pack $simButtonMenu -side right
+
+$simMenu add command -label "1.0" -command "setRtRatio 1.0"
+$simMenu add command -label "1.5" -command "setRtRatio 1.5"
+$simMenu add command -label "2.0" -command "setRtRatio 2.0"
+$simMenu add command -label "4.0" -command "setRtRatio 4.0"
+$simMenu add command -label "8.0" -command "setRtRatio 8.0"
+$simMenu add separator
+$simMenu add command -label "input reset" -command "simulate cap_mousein \"\"; simulate play_mousein \"\""
+$simMenu add command -label "input capture " -command "simulate cap_mousein mouse.in; simulate play_mousein \"\""
+$simMenu add command -label "input playback" -command "simulate cap_mousein \"\"; simulate play_mousein mouse.in"
+
+#------------------------------
+# setRtRatio - set the realtime ratio
+#   r = ratio (real-time / sim-time)
+#------------------------------
+
+proc setRtRatio { r } {
+    # reposition active objects
+    if {[info procs resetActiveObj] == "resetActiveObj"} {
+	resetActiveObj
+    }
+
+    world setaf skier
+    set fail [catch {simulate set_rtratio $r} returnString]
+    if {$fail} {
+	tk_messageBox -message "Error: Unable to set realtime ratio" \
+	    -type ok
+    }
+}
+
+#----------------------------------------------------------------------
+# active objects / props
+#----------------------------------------------------------------------
+
+set aObjButtonMenu [menubutton .maobj -text "new" \
+ 	-menu .maobj.mnu -relief raised -borderwidth 3]
+set aObjMenu [menu $aObjButtonMenu.mnu]
+pack $aObjButtonMenu -side right
+
+$aObjMenu add command -label "rock" -command "< props/newRock.setup"
+$aObjMenu add command -label "big rock" -command "< props/newBigRock.setup"
+$aObjMenu add command -label "crate" -command "< props/newCrate.setup"
+$aObjMenu add command -label "ball" -command "< props/newBall.setup"
+$aObjMenu add command -label "big ball" -command "< props/newBigBall.setup"
+$aObjMenu add command -label "giant ball" -command "< props/newGiantBall.setup"
+$aObjMenu add command -label "snowman head" -command "< props/newSnowmanHead.setup"
+$aObjMenu add command -label "snowman" -command "< props/newSnowman.setup"
+$aObjMenu add command -label "sign" -command "< props/newSign.setup; makeNewSign sign0 0 0"
+$aObjMenu add command -label "spring board" -command "< props/newGiantSpBoard.setup"
+$aObjMenu add command -label "tree" -command "< props/newTree.setup"
+$aObjMenu add command -label "bridge block" -command "< props/newBridgeBlk.setup"
+$aObjMenu add command -label "bridge block2" -command "< props/newBridgeBlk2.setup"
+$aObjMenu add command -label "bridge guard" -command "< props/newBridgeGuard.setup"
+$aObjMenu add command -label "shell" -command "< props/newShell.setup"
+$aObjMenu add separator
+$aObjMenu add command -label "bb tree (blur 60%)" -command "loadtexobj props/treeBg_tess.wobj props/treeBlur06.ppm"
+$aObjMenu add command -label "bb tree (dark 30%)" -command "loadtexobj props/treeBg_tess.wobj props/treeDark03.ppm"
+$aObjMenu add command -label "bb tree (dark 50%)" -command "loadtexobj props/treeBg_tess.wobj props/treeDark05.ppm"
+$aObjMenu add command -label "bb tree (dark 70%)" -command "loadtexobj props/treeBg_tess.wobj props/treeDark07.ppm"
+$aObjMenu add separator
+$aObjMenu add command -label "bb jump-sign" -command "< props/newJump.setup"
+
+#----------------------------------------------------------------------
+# edit menu
+#----------------------------------------------------------------------
+
+set editButtonMenu [menubutton .medit -text "edit" \
+ 	-menu .medit.mnu -relief raised -borderwidth 3]
+set editMenu [menu $editButtonMenu.mnu]
+pack $editButtonMenu -side right
+
+$editMenu add command -label "fullscreen" -command "fullscreen"
+$editMenu add command -label "window" -command "winsize 3 80 1020 660"
+$editMenu add separator
+$editMenu add command -label "100%" -command "viewport 100"
+$editMenu add command -label "60%" -command "viewport 60"
+$editMenu add separator
+$editMenu add command -label "black bg" -command "clearcolor 0 0 0"
+$editMenu add command -label "white bg" -command "clearcolor 1 1 1"
+$editMenu add separator
+$editMenu add command -label "pb timeDep" -command "world pbMode timeDep"
+$editMenu add command -label "pb constSkip" -command "world pbMode constSkip"
+$editMenu add separator
+$editMenu add command -label "tog link" -command "tog_link"
+$editMenu add command -label "tog tess" -command "tog_tess"
+$editMenu add command -label "tog texture" -command "tog_tex"
+$editMenu add separator
+$editMenu add command -label "tog ground" -command "tog_gnd"
+$editMenu add command -label "tog grid" -command "grid"
+$editMenu add command -label "tog hotzone" -command "hotzone"
+$editMenu add separator
+$editMenu add command -label "new artfig" -command "world newaf"
+$editMenu add command -label "del artfig" -command "world delaf"
+$editMenu add separator
+$editMenu add command -label "playback frame skip" -command "world pbFrameSkip true"
+$editMenu add separator
+$editMenu add command -label "reset profile" -command "source profileSetup.tcl"
+$editMenu add command -label "open new level" -command "addLevel"
+$editMenu add command -label "complete level" -command "_startNextStage"
+$editMenu add separator
+$editMenu add command -label "reset world" -command "< reset.tcl; gui redraw"
+$editMenu add separator
+$editMenu add command -label "hide menu" -command "wm withdraw ."
+
+#----------------------------------------------------------------------
+# window size
+#----------------------------------------------------------------------
+
+wm geometry "." 1015x26+0+4
+
+#----------------------------------------------------------------------
+# filler
+#----------------------------------------------------------------------
+
+# canvas .filler -height 10 -width 600
+# grid .filler -row 0 -column 4
+
+console hide
+world sortTexObj
+
+# comment out the following line to show the Tk menu
+wm withdraw .

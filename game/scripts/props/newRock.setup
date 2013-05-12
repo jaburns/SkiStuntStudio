@@ -1,0 +1,32 @@
+#----------------------------------------------------------------------
+# constant definitions
+#----------------------------------------------------------------------
+
+# directory info
+set baseDir props
+set scenarioDir $baseDir
+
+# object base name + counter
+set counterName rockCount
+set objNameBase rock
+
+# increment counter
+if [info exists $counterName] {
+    set $counterName [expr $$counterName + 1]
+} else {
+    set $counterName 1
+}
+set objName "$objNameBase[expr $$counterName]"
+
+#----------------------------------------------------------------------
+# object creation
+#----------------------------------------------------------------------
+
+world newaf
+< $scenarioDir/rock.afig
+artfig setname $objName
+mass 3 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_rock
+restpose 1 1.5
+usemonitor snowEffects

@@ -1,0 +1,9 @@
+set baseDir ski
+set scenarioDir $baseDir/studio/2
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick ../artwork/preview.jpg repeat
+title "$::charName >> Jungle Jetpack"
+

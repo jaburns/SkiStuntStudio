@@ -1,0 +1,39 @@
+#----------------------------------------------------------------------
+# constant definitions
+#----------------------------------------------------------------------
+
+# directory info
+set baseDir props
+set scenarioDir $baseDir
+
+# object base name + counter
+set counterName snowmanHeadCount
+set objNameBase snowmanHead
+
+# increment counter
+if [info exists $counterName] {
+    set $counterName [expr $$counterName + 1]
+} else {
+    set $counterName 1
+}
+set objName "$objNameBase[expr $$counterName]"
+
+#----------------------------------------------------------------------
+# object creation
+#----------------------------------------------------------------------
+
+world newaf
+< $scenarioDir/ball.afig
+artfig setname $objName
+mass 60 1
+jt_pd 1 0 0.00 -10 10 -1 1 
+dgen dyn_ball
+restpose 1 2
+usemonitor snowEffects
+
+loadskin $scenarioDir/ball.skin $scenarioDir/bigBall.wobj $scenarioDir/snowmanHead.jpg
+
+sound load ballRoll $::soundDir/smallRockTumble.wav
+usemonitor hardLanding all ballRoll 120
+
+tog_link

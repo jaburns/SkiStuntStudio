@@ -1,0 +1,113 @@
+set erase 1
+
+# default rest location
+set restLocX -1.5 
+set restLocY 0.7
+
+### reset state
+proc keyr {} {
+  global restLocX
+  global restLocY
+
+  simulate stop
+  logging off
+  if [file exists log.ani] {
+    file rename -force log.ani log_old.ani
+  }
+  logging on
+#  simulate log_rtratio
+  set erase 2
+  redisplay
+  restpose $restLocX $restLocY
+  simulate start
+}
+
+proc keyt {} {
+  simulate stop
+  if [file exists log.ani] {
+    play log.ani 1
+  }
+}
+
+proc keyy {} {
+  simulate stop
+  simulate set_rtratio 5
+  if [file exists log.ani] {
+    play log.ani 2
+  }
+  simulate set_rtratio 1.5
+}
+
+proc keyu {} {
+  play back1b.ani 3
+}
+
+proc keyd {} {
+  cd ../animations/ski2
+  play 1.ani 1
+  play 2.ani
+  play 3.ani
+  play 4.ani
+  play 5.ani
+  play 6.ani
+  play 7.ani
+  play 8.ani
+  play 9.ani
+  play 10.ani
+  play 11.ani
+  play 12.ani
+  play 13.ani
+  play 14.ani
+  play 15.ani
+  cd ../../scripts
+}
+
+proc keyU {} {
+  while {1} {
+    keyd
+  }
+}
+
+proc keyo {} {
+  global erase
+  autopan 0 0
+  winview 9 -5 50
+  set erase 0
+  redisplay
+  puts "Turned erase off"
+}
+
+proc keyp {} {
+  global erase
+  set erase 1
+  autopan 0.1 0.1
+}
+
+###### control over logging
+proc keyl {} {
+  logging on
+}
+
+proc keyL {} {
+  logging off
+  cp log.ani log_old.ani
+}
+
+#mousemap 2 y 0 100
+#mousemap 3 y 0 -170
+#mousemap 4 y 0 140
+#mousemap 3 x -30 30 
+
+mousemap 2 y 100 0
+mousemap 3 y -130 20
+mousemap 4 y 20 70
+mousemap 3 x 20 -20 
+mousemap 2 x 60 0
+
+set dt_disp 0.02
+
+#autopan 1 1
+## turn hotzone borders off
+
+#hotzone
+show

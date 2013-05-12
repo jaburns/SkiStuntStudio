@@ -1,0 +1,20 @@
+# initialize variables for creating rock pile
+
+set baseDir     rock
+set scenarioDir $baseDir
+set rockIndex   1
+
+proc addRock {} {
+  global rockIndex
+  global scenarioDir
+  
+  world newaf
+  < $scenarioDir/rock.afig
+  artfig setname "rock$rockIndex"
+  mass 3 1
+  jt_pd 1 0 0.00 -10 10 -1 1 
+  dgen dyn_rock
+  artfig sleep
+  set rockIndex [expr $rockIndex + 1]
+}
+

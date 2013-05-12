@@ -1,0 +1,20 @@
+set f 0.5
+
+new_link
+new_pt 0.1 1 $f all
+new_pt 0.9 1 $f all
+new_pt 1 0.9 $f all
+new_pt 1 0.1 $f all
+new_pt 0.9 0 $f all
+new_pt 0.1 0 $f all
+new_pt 0 0.1 $f all
+new_pt 0 0.9 $f all
+# new_pt 0 1 $f all
+# new_pt 1 1 $f all
+# new_pt 1 0 $f all
+# new_pt 0 0 $f all
+link_close
+jt_org 1 0 0
+mass 10.000000
+link_kp 2000
+link_kd 200

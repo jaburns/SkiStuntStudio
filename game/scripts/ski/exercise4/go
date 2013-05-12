@@ -1,0 +1,45 @@
+set baseDir ski
+set scenarioDir $baseDir/exercise4
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.txt
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+tog_gnd
+
+loadtexobj props/square_tess.wobj props/blank.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+tog_gnd
+
+#----------------------------------------------------------------------
+
+< $::charDir/common.setup
+
+set ::restLocX -1.465535
+set ::restLocY 0.598467
+title "$::charName >>  Exercise 4 "
+
+world setaf skier
+restpose -1.465535 0.598467 1.529096
+
+#----------------------------------------------------------------------
+
+# play no sound at startup
+proc startSim {} {
+}
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+#----------------------------------------------------------------------
+# setup execise evalation engine
+#----------------------------------------------------------------------
+
+source $scenarioDir/stuntEval.tcl
+

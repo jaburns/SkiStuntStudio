@@ -1,0 +1,90 @@
+set baseDir ski
+set scenarioDir $baseDir/gap
+set ::scenarioDir $scenarioDir
+set propsDir props
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd3_1.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 80
+
+gndfile $scenarioDir/gnd3_2.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+
+gndfile $scenarioDir/gnd3_3.txt
+gnd kp 2000
+gnd kd 200
+gnd cf 0.6
+gnd slices 70
+gnd sliceStat
+
+loadtexobj $scenarioDir/gnd_tess.wobj $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd_tess.txfm
+
+loadtexobj $scenarioDir/blank1.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/blank.txfm
+
+loadtexobj $scenarioDir/blank2.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/blank.txfm
+
+loadtexobj $scenarioDir/blank3.wobj $propsDir/blank.jpg
+loadtexobjtxfm $scenarioDir/blank.txfm
+
+< $baseDir/common.setup
+
+set ::restLocX -23.378
+set ::restLocY 9.4286
+
+texload brick ../artwork/moraine128_blur.ppm repeat
+
+title "skier >> gap"
+
+#----------------------------------------------------------------------
+# bridge
+#----------------------------------------------------------------------
+
+set breakForce 1200
+
+< props/newBridgeChain3L.setup
+artfig setname bridgeChain3L1
+restpose 7.225168 -1.604513 -1.718770
+artfig type Bridge
+
+< props/newBridgeBlk.setup
+artfig setname bridgeBlk1
+restpose 9.832775 -1.490155
+artfig type Bridge
+
+< props/newBridgeChain3R.setup
+artfig setname bridgeChain3R1
+restpose 10.558526 -1.673249 1.068241
+artfig type Bridge
+
+set skp 9000
+set skd 500
+set sbkf 1500
+spring bridgeChain3L1 3 9.631716 -1.6654772 bridgeBlk1 1 9.631716 -1.6654772 $skp $skd $sbkf
+spring bridgeBlk1 1 10.504254 -1.665472 bridgeChain3R1 1 10.504254 -1.665472 $skp $skd $sbkf
+
+proc resetActiveObj {} {
+    world setaf bridgeChain3L1
+    restpose 7.225168 -1.604513 -1.718770
+
+    world setaf bridgeBlk1
+    restpose 9.832775 -1.490155
+
+    world setaf bridgeChain3R1
+    restpose 10.558526 -1.673249 1.068241
+}
+
+resetActiveObj
+world setaf skier
+restpose $::restLocX $::restLocY
+simulate set_rtratio 1

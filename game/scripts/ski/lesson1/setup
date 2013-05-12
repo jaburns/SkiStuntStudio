@@ -1,0 +1,23 @@
+set baseDir ski
+set scenarioDir $baseDir/lesson1
+set ::scenarioDir $scenarioDir
+
+grid
+hotzone
+texload brick $scenarioDir/previewGL.jpg repeat
+
+# sound directory setup
+set soundDir ../sound
+set ::soundDir $soundDir
+
+# ski directory name
+set skiDir ski
+set ::skiDir $skiDir
+
+# initialize stunt event controller
+set ::seEvalPeriod 0.1
+world seCtrl seEval $::seEvalPeriod
+source $skiDir/stuntEval.tcl
+title "$::charName >> Lesson 1"
+
+< anim.tcl

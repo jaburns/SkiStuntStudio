@@ -1,0 +1,58 @@
+set baseDir ski
+set scenarioDir $baseDir/camelCrates
+set ::scenarioDir $scenarioDir
+
+#----------------------------------------------------------------------
+# ground setup
+#----------------------------------------------------------------------
+
+gndfile $scenarioDir/gnd.pts
+loadtexobj $scenarioDir/gnd.tess $scenarioDir/gnd.jpg
+loadtexobjtxfm $scenarioDir/gnd.txfm
+
+gnd kp 2000
+gnd kd 200
+gnd cf 0.60
+gnd slices 30
+
+< $::charDir/common.setup
+
+set ::restLocX -1.5 
+set ::restLocY 0.9
+
+title "$::charName >> camel + crates"
+texload brick ../artwork/moraine128_blur.ppm repeat
+locMap load $scenarioDir/loc.map
+source $scenarioDir/stuntEval.tcl
+
+#----------------------------------------------------------------------
+# crates
+#----------------------------------------------------------------------
+
+sound load thudBox ../sound/thudBox.wav
+
+< props/newCrate.setup
+artfig setname crate1
+
+< props/newCrate.setup
+artfig setname crate2
+
+proc resetActiveObj {} {
+    world setaf crate1
+    restpose 42.436554 -7.3051
+
+    world setaf crate2
+    restpose 42.536554 -6.2051
+}
+
+proc autoscroll {} {
+    camera fps 60
+    camera speed 7
+    camera fly $::scenarioDir/camera.path
+}
+
+if [preview] {
+    accumZoom 0
+    zoom -4
+    winview 23 -5
+}

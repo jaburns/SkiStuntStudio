@@ -1,0 +1,3 @@
+loadtexobj props/jump.wobj props/jump.jpg
+loadtexobjtxfm props/jump.txfm
+
