@@ -10,3 +10,6 @@ well.  This list is managed automatically by the level editor software when you 
 
 Check out a video demonstration of the creation of a custom level here:  
 [![Demonstration](http://img.youtube.com/vi/3ddQ6a_RnXo/0.jpg)](http://www.youtube.com/watch?v=3ddQ6a_RnXo)
+
+The game has been released as freeware by the original authors and a valid serial number can be obtained
+from their [home page](http://www.cs.ubc.ca/~van/papers/skistunt.html)
